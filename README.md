@@ -26,11 +26,14 @@ dev:
                 private_key: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
         dapptoken:
             permissions:
-                active:
-                    - dapptoken@eosio.code
-                    - EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x
                 owner:
                     - EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi
+                active:
+                    # parent: owner # implicit for active
+                    threshold: 2
+                    - dapptoken@eosio.code 1
+                    - EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x 2
+                    - wait@600 1
             ram: 8192 # 8KB of RAM
             # stake resources to self
             cpu:
@@ -61,10 +64,10 @@ mainnet:
 ## Usage
 
 ```bash
-eosiac apply [<configuration_file>] <environment>
+eosiac apply <environment> [--config path]
 
 eosiac apply dev # will look for an `eosiac.yml` file in current directory
-eosiac apply 'configs/eos_config.yml' mainnet
+eosiac apply mainnet --config 'configs/eos_config.yml'
 ```
 
 Upon running the tool on a configuration, it will determine the actions that need to be run to bring the accounts to the desired state.

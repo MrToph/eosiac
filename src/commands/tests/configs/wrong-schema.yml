@@ -1,0 +1,38 @@
+dev:
+  chain_id: cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f
+  node_endpoint: https://localhost:8080
+  accounts_manager: eosio # account signing the new_account actions (needed when creating the accounts for the first time)
+  funds_manager: eosio # account distributing tokens to accounts (liquid ones but also for staking)
+  ram_manager: eosio # account buying RAM for accounts
+
+  accounts:
+    eosio:
+      signature:
+        type: key
+        private_key: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+    dapptoken:
+      auth:
+        owner:
+          permissions:
+            - EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi
+        active:
+          # parent: owner # implicit for active
+          threshold: 2
+          permissions:
+            - dapptoken@eosio.code 1
+            - THIS IS WRONG
+            - wait@600 1
+      ram: 262144 # 256KB of RAM
+      # stake resources to self
+      cpu:
+        - delegate_to: dapptoken
+          amount: 10000 # 1 EOS
+      net:
+        - delegate_to: dapptoken
+          amount: 10000 # 1 EOS
+      tokens:
+        - account: eosio.token
+          symbol: EOS
+          amount: 10000 # 1 EOS (unstaked)
+      code: contracts/dapptoken/dapptoken.wasm
+      abi: contracts/dapptoken/dapptoken.abi
