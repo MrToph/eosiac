@@ -1,24 +1,7 @@
-const chalk = require(`chalk`)
-
-function log(...args) {
-    console.log(...args)
-}
-
-function info(...args) {
-    console.log(chalk.blue(...args))
-}
-
-function warning(...args) {
-    console.log(chalk.yellow(...args))
-}
-
-function error(...args) {
-    console.log(chalk.red(...args))
-}
+const logs = require(`./log`)
+const getConfig = require(`./get-config`)
 
 module.exports = {
-    log,
-    info,
-    warning,
-    error,
+    ...logs,
+    getConfig,
 }

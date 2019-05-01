@@ -10,8 +10,10 @@ program
     .command(`apply <env>`)
     .description(`run setup transactions for specified environment`)
     .option(`-c, --config <path>`, `config file to use`)
+    .option(`-v, --verbose`, `verbose output log`)
     .action(async (env, options) => {
         try {
+            utils.setVerbose(options.verbose)
             await commands.apply(env, options)
         } catch (error) {
             utils.error(error.message)

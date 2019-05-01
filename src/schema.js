@@ -20,14 +20,16 @@ const extendedAssetSchema = Joi.object({
 })
 
 const permissionSchema = Joi.string()
-    .regex(/^(([a-z1-5.]{0,12}[a-j1-5]{0,1}@[a-z1-5.]+)|(EOS[\w]{50})|(wait@[\d]+))( \d*)?$/)
+    .regex(/^(([a-z1-5.]{0,12}[a-j1-5]{0,1}@[a-z1-5.]+)|(EOS[\w]{50})|(wait@[\d]+))\s*(\d*)?$/)
     .required()
 const authSchema = Joi.object({
     parent: Joi.string(),
     threshold: Joi.number()
         .integer()
         .positive(),
-    permissions: Joi.array().items(permissionSchema),
+    permissions: Joi.array()
+        .items(permissionSchema)
+        .required(),
 })
 
 const accountSchema = Joi.object({

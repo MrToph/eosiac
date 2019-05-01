@@ -15,7 +15,7 @@ Configurations are stored in an `eosiac.yml` [YAML](https://learnxinyminutes.com
 ---
 dev:
   chain_id: cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f
-  node_endpoint: https://localhost:8080
+  node_endpoint: http://localhost:8080
   accounts_manager: eosio # account signing the new_account actions (needed when creating the accounts for the first time)
   funds_manager: eosio # account distributing tokens to accounts (liquid ones but also for staking)
   ram_manager: eosio # account buying RAM for accounts
@@ -54,12 +54,12 @@ dev:
 
 
 jungle:
-    chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473
-    node_endpoint: https://jungle2.cryptolions.io:443
+  chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473
+  node_endpoint: https://jungle2.cryptolions.io:443
 
 mainnet:
-    chain_id: aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906
-    node_endpoint: https://public.eosinfra.io
+  chain_id: aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906
+  node_endpoint: https://public.eosinfra.io
 
 ```
 
