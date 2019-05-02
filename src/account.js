@@ -106,7 +106,7 @@ class Account {
                 },
             ],
             data: {
-                creator: `eosio`,
+                creator: env.accounts_manager,
                 name: this.name,
                 owner: auth.owner,
                 active: auth.active,

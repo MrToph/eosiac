@@ -3,7 +3,7 @@ const path = require(`path`)
 const apply = require(`../apply`)
 const resolve = fileRelativePath => path.resolve(__dirname, fileRelativePath)
 
-describe(`eosiac`, () => {
+describe(`apply`, () => {
     test(`apply throws on non-existant config file`, () =>
         expect(apply(`dev`, {config: resolve(`./configs/no-exist.yml`)})).rejects.toThrow(
             /Config file .* does not exist/i,
@@ -21,10 +21,4 @@ describe(`eosiac`, () => {
         expect(apply(`ethereum`, {config: resolve(`./configs/default.yml`)})).rejects.toThrow(
             /Environment ethereum not found/i,
         ))
-
-    test(`apply should create one account`, async () => {
-        expect.assertions(1)
-        const result = await apply(`dev`, {config: resolve(`./configs/default.yml`)})
-        expect(result).toBeUndefined()
-    })
 })
