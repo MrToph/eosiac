@@ -12,7 +12,7 @@ dev:
         type: key
         private_keys:
           - 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-    dapptoken51:
+    dapptoken54:
       signature:
         type: key
         private_keys:
