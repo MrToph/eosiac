@@ -37,13 +37,37 @@ async function apply(envName, options) {
         )
 
         const accounts = Object.keys(env.accounts).map(accountName => env.accounts[accountName])
-        await Promise.all(accounts.map(account => account.fetch(api)))
+        await Promise.all(accounts.map(account => account.fetch({api})))
+
+        const createdAccounts = []
         /* eslint-disable no-await-in-loop */
         for (const account of accounts) {
-            const actions = await account.create(env)
+            const actions = await account.create({env})
             if (actions) {
                 await performTransaction({sendTransaction, actions})
                 utils.log(utils.chalk.green(`Account "${account.name}" created.`))
+                createdAccounts.push(account)
+            }
+        }
+        /* eslint-enable no-await-in-loop */
+
+        await Promise.all(createdAccounts.map(account => account.fetch({api, delay: 1100})))
+
+        /* eslint-disable no-await-in-loop */
+        for (const account of accounts) {
+            const actions = await account.updateAuth({env})
+            if (actions) {
+                try {
+                    await performTransaction({sendTransaction, actions})
+                } catch (error) {
+                    throw new Error(
+                        `${error.message}\nNote: Updating permissions requires ${utils.chalk.yellow(
+                            `owner`,
+                        )} permissions. Make sure these are available for signatures.`,
+                    )
+                }
+                utils.log(utils.chalk.green(`Permissions for "${account.name}" updated.`))
+                createdAccounts.push(account)
             }
         }
         /* eslint-enable no-await-in-loop */

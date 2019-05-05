@@ -10,19 +10,30 @@ dev:
     eosio:
       signature:
         type: key
-        private_key: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-    dapptoken:
+        private_keys:
+          - 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+    dapptoken51:
+      signature:
+        type: key
+        private_keys:
+          - 5JxfmGBJkKqHhcfmbGnwuhjrzxg3bd7D46hEpT8V634L2G7ptLr # active
+          - 5K5stUB6Do1XKvNCKv4Qh7JtPWzGd6sm12bBnRSD5gaA76a8TFE # owner, for _updateauth_
       auth:
         owner:
           permissions:
-            - EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi
+            - EOS8ktnmUMpc5GLFwBa5bp3n2djwBUuV7BcZR3fS1dxQ7RFzQLf6v
         active:
           # parent: owner # implicit for active
           threshold: 2
           permissions:
-            - EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x
+            - EOS7RTtzjKfoTBt4WR6ZMVgCfuM51fj4AbyzexhCqFWUk8BbK2EG7 2
             - dapptoken@eosio.code 1
             - wait@600 1
+        newnewnew:
+          parent: owner
+          threshold: 1
+          permissions:
+            - EOS62mKPAN7T48aPdi8ZYRcPFWURgw9JMjz52yxijDAwRV8GwCzmY
       ram: 262144 # 256KB of RAM
       # stake resources to self
       cpu:
@@ -44,35 +55,3 @@ jungle:
   accounts_manager: eosio # account signing the new_account actions (needed when creating the accounts for the first time)
   funds_manager: eosio # account distributing tokens to accounts (liquid ones but also for staking)
   ram_manager: eosio # account buying RAM for accounts
-
-  accounts:
-    eosio:
-      signature:
-        type: key
-        private_key: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-    dapptoken:
-      auth:
-        owner:
-          permissions:
-            - EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi
-        active:
-          # parent: owner # implicit for active
-          threshold: 2
-          permissions:
-            - EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x
-            - dapptoken@eosio.code 1
-            - wait@600 1
-      ram: 262144 # 256KB of RAM
-      # stake resources to self
-      cpu:
-        - delegate_to: dapptoken
-          amount: 10000 # 1 EOS
-      net:
-        - delegate_to: dapptoken
-          amount: 10000 # 1 EOS
-      tokens:
-        - account: eosio.token
-          symbol: EOS
-          amount: 10000 # 1 EOS (unstaked)
-      code: contracts/dapptoken/dapptoken.wasm
-      abi: contracts/dapptoken/dapptoken.abi

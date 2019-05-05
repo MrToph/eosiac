@@ -37,7 +37,7 @@ const accountSchema = Joi.object({
         type: Joi.string()
             .valid(`key`, `scatter`)
             .required(),
-        private_key: Joi.string(),
+        private_keys: Joi.array().items(Joi.string().regex(/^5/)),
     }),
     auth: Joi.object().pattern(/^/, authSchema),
     ram: Joi.number()

@@ -24,7 +24,8 @@ dev:
     eosio:
       signature:
         type: key
-        private_key: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+        private_keys:
+          - 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
     dapptoken:
       auth:
         owner:

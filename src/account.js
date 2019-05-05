@@ -1,4 +1,7 @@
+/* eslint no-underscore-dangle: ["error", { "allowAfterThis": true }] */
 const get = require(`lodash/get`)
+const isEqual = require(`lodash/isEqual`)
+const sortBy = require(`lodash/sortBy`)
 const utils = require(`./utils`)
 
 const parsePermission = p => {
@@ -17,6 +20,29 @@ const parsePermission = p => {
     }
 }
 
+const objComparer = obj => JSON.stringify(obj)
+const arraysAreEqual = (arr1, arr2) => isEqual(sortBy(arr1, objComparer), sortBy(arr2, objComparer))
+const permissionNeedsToBeUpdated = (desired, current) => {
+    if (!current) {
+        return true
+    }
+
+    const {required_auth: currentAuth} = current
+    if (desired.parent !== current.parent || desired.threshold !== currentAuth.threshold) {
+        return true
+    }
+
+    if (
+        !arraysAreEqual(desired.keys, currentAuth.keys) ||
+        !arraysAreEqual(desired.accounts, currentAuth.accounts) ||
+        !arraysAreEqual(desired.waits, currentAuth.waits)
+    ) {
+        return true
+    }
+
+    return false
+}
+
 class Account {
     constructor(name, desiredState) {
         this.name = name
@@ -24,32 +50,19 @@ class Account {
         this.currentState = {}
     }
 
-    async fetch(api) {
-        try {
-            utils.silent(`Checking account "${this.name}" ...`)
-            this.currentState = await api.rpc.get_account(this.name)
-            utils.silent(`Account "${this.name}" exists.`)
-            // no error => account already exists
-        } catch (error) {
-            // unknown key error => account does not exist yet
-            if (/unknown key/i.test(error.message)) {
-                utils.info(`Account "${this.name}" does not exist yet.`)
-
-                return
-            }
-            throw error
-        }
-    }
-
-    getAuth() {
+    _getAuthFromConfig() {
         if (!this.auth) {
             return {}
         }
 
         return Object.keys(this.auth).reduce((acc, permName) => {
             const permission = this.auth[permName]
+
+            const defaultParent = permName === `owner` ? `` : `owner`
+
             acc[permName] = {
                 threshold: permission.threshold || 1,
+                parent: permission.parent || defaultParent,
                 keys: [],
                 accounts: [],
                 waits: [],
@@ -85,19 +98,51 @@ class Account {
         }, {})
     }
 
-    async create(env) {
+    _isCreated() {
+        return Boolean(this.currentState.created)
+    }
+
+    _assertCreated() {
+        if (!this._isCreated()) {
+            throw new Error(
+                `Account "${
+                    this.name
+                }" does not exist, but it should at this stage. Try running again.`,
+            )
+        }
+    }
+
+    async fetch({api, delay = 0}) {
+        try {
+            await utils.sleep(delay)
+            utils.silent(`Checking account "${this.name}" ...`)
+            this.currentState = await api.rpc.get_account(this.name)
+            // no error => account already exists
+            utils.silent(`Account "${this.name}" exists.`)
+        } catch (error) {
+            // unknown key error => account does not exist yet
+            if (/unknown key/i.test(error.message)) {
+                utils.info(`Account "${this.name}" does not exist yet.`)
+
+                return
+            }
+            throw error
+        }
+    }
+
+    async create({env}) {
         // account already created
-        if (this.currentState.created) {
+        if (this._isCreated()) {
             return null
         }
 
-        const auth = this.getAuth()
+        const auth = this._getAuthFromConfig()
         if (!auth.owner || !auth.active) {
             throw new Error(`Missing active and owner permissions to create account "${this.name}"`)
         }
 
         return {
-            account: env.accounts_manager,
+            account: `eosio`,
             name: `newaccount`,
             authorization: [
                 {
@@ -112,6 +157,57 @@ class Account {
                 active: auth.active,
             },
         }
+    }
+
+    async updateAuth({env}) {
+        this._assertCreated()
+
+        const auth = this._getAuthFromConfig()
+
+        const permNamesToUpdate = Object.keys(auth)
+            .map(permName => {
+                if (
+                    permissionNeedsToBeUpdated(
+                        auth[permName],
+                        this.currentState.permissions.find(p => p.perm_name === permName),
+                    )
+                ) {
+                    return permName
+                }
+
+                return null
+            })
+            .filter(Boolean)
+
+        const requiresUpdate = permNamesToUpdate.length > 0
+        if (!requiresUpdate) {
+            utils.silent(`Account "${this.name}"'s permissions are up-to-date.`)
+        } else {
+            utils.silent(
+                `Account "${this.name}"'s permissions (${permNamesToUpdate.join(
+                    ` `,
+                )}) need to be updated.`,
+            )
+        }
+
+        const actions = permNamesToUpdate.map(permName => ({
+            account: `eosio`,
+            name: `updateauth`,
+            authorization: [
+                {
+                    actor: this.name,
+                    permission: `owner`,
+                },
+            ],
+            data: {
+                account: this.name,
+                permission: permName,
+                parent: auth[permName].parent,
+                auth: auth[permName],
+            },
+        }))
+
+        return requiresUpdate ? actions : null
     }
 }
 
