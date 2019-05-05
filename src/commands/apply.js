@@ -21,11 +21,12 @@ async function apply(envName, options) {
             (account, accountName) => new Account(accountName, account),
         )
 
-        const {fetchAccounts, createAccounts, updateAuth} = steps.getSteps({env})
+        const {fetchAccounts, createAccounts, updateAuth, updateRam} = steps.getSteps({env})
         await fetchAccounts()
         const createdAccounts = await createAccounts()
         await fetchAccounts(createdAccounts, 1100)
         await updateAuth()
+        await updateRam()
     }
 
     utils.log(chalk.green`Success!`)

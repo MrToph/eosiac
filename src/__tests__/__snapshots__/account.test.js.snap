@@ -170,3 +170,23 @@ Array [
   },
 ]
 `;
+
+exports[`account.updateRam returns no actions to run when enough RAM 1`] = `null`;
+
+exports[`account.updateRam returns updateRam action when used with new permission 1`] = `
+Object {
+  "account": "eosio",
+  "authorization": Array [
+    Object {
+      "actor": "rammngr",
+      "permission": "active",
+    },
+  ],
+  "data": Object {
+    "bytes": 154793,
+    "payer": "rammngr",
+    "receiver": "test",
+  },
+  "name": "buyrambytes",
+}
+`;

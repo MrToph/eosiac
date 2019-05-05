@@ -56,10 +56,23 @@ const getSteps = ({env}) => {
         /* eslint-enable no-await-in-loop */
     }
 
+    const updateRam = async () => {
+        /* eslint-disable no-await-in-loop */
+        for (const account of accounts) {
+            const actions = await account.updateRam({env})
+            if (actions) {
+                await performTransaction({sendTransaction, actions})
+                utils.log(utils.chalk.green(`RAM bought for "${account.name}".`))
+            }
+        }
+        /* eslint-enable no-await-in-loop */
+    }
+
     return {
         fetchAccounts,
         createAccounts,
         updateAuth,
+        updateRam,
     }
 }
 

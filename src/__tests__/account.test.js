@@ -1,3 +1,4 @@
+const cloneDeep = require(`lodash/cloneDeep`)
 const Account = require(`../account`)
 const existingAccount = require(`./account.json`)
 
@@ -47,7 +48,7 @@ describe(`account.create`, () => {
             },
         }
         const a = new Account(`test`, desiredState)
-        a.currentState = existingAccount
+        a.currentState = cloneDeep(existingAccount)
         const actions = await a.create({env})
         expect(actions).toBeFalsy()
     })
@@ -99,7 +100,7 @@ describe(`account.updateAuth`, () => {
             },
         }
         const a = new Account(`test`, accountConfig)
-        a.currentState = existingAccount
+        a.currentState = cloneDeep(existingAccount)
         const actions = await a.updateAuth({env})
         expect(actions).toMatchSnapshot()
     })
@@ -130,8 +131,42 @@ describe(`account.updateAuth`, () => {
             },
         }
         const a = new Account(`test`, accountConfig)
-        a.currentState = existingAccount
+        a.currentState = cloneDeep(existingAccount)
         const actions = await a.updateAuth({env})
+        expect(actions).toMatchSnapshot()
+    })
+})
+
+describe(`account.updateRam`, () => {
+    const env = {
+        ram_manager: `rammngr`,
+    }
+
+    const accountConfig = {
+        ram: 262144,
+    }
+
+    it(`throws when account does not exist yet`, async () => {
+        expect.assertions(1)
+        const a = new Account(`test`, accountConfig)
+        a.currentState = {}
+        expect(a.updateRam({env})).rejects.toThrow(/does not exist/i)
+    })
+
+    it(`returns no actions to run when enough RAM`, async () => {
+        expect.assertions(1)
+        const a = new Account(`test`, accountConfig)
+        a.currentState = cloneDeep(existingAccount)
+        a.currentState.ram_quota = accountConfig.ram
+        const actions = await a.updateRam({env})
+        expect(actions).toMatchSnapshot()
+    })
+
+    it(`returns updateRam action when not enough RAM`, async () => {
+        expect.assertions(1)
+        const a = new Account(`test`, accountConfig)
+        a.currentState = cloneDeep(existingAccount)
+        const actions = await a.updateRam({env})
         expect(actions).toMatchSnapshot()
     })
 })

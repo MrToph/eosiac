@@ -209,6 +209,59 @@ class Account {
 
         return requiresUpdate ? actions : null
     }
+
+    async updateRam({env}) {
+        this._assertCreated()
+
+        const desiredRam = Number.parseInt(this.ram, 10)
+        if (!desiredRam) {
+            utils.silent(`No RAM value configured for ${this.name}.`)
+
+            return null
+        }
+
+        const currentRam = this.currentState.ram_quota
+        if (currentRam === -1 || !Number.isFinite(currentRam)) {
+            utils.log(
+                `No on-chain RAM value found for ${
+                    this.name
+                }. Probably running a local network. Skipping RAM purchase.`,
+            )
+
+            return null
+        }
+
+        const bytesToPurchase = desiredRam - currentRam
+        if (!Number.isFinite(bytesToPurchase)) {
+            throw new Error(
+                `Unexpected RAM bytes value to purchase for account ${
+                    this.name
+                }: ${bytesToPurchase} (${desiredRam}, ${currentRam})`,
+            )
+        }
+
+        if (bytesToPurchase <= 0) {
+            utils.silent(`Account "${this.name}"'s RAM is sufficient (${currentRam / 1024} kB).`)
+
+            return null
+        }
+
+        return {
+            account: `eosio`,
+            name: `buyrambytes`,
+            authorization: [
+                {
+                    actor: env.ram_manager,
+                    permission: `active`,
+                },
+            ],
+            data: {
+                payer: env.ram_manager,
+                receiver: this.name,
+                bytes: bytesToPurchase,
+            },
+        }
+    }
 }
 
 module.exports = Account

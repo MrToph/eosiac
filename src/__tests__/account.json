@@ -5,9 +5,9 @@
     "privileged": false,
     "last_code_update": "1970-01-01T00:00:00.000",
     "created": "2019-05-02T17:01:57.000",
-    "ram_quota": -1,
-    "net_weight": -1,
-    "cpu_weight": -1,
+    "ram_quota": 107351,
+    "net_weight": 60000,
+    "cpu_weight": 60000,
     "net_limit": { "used": -1, "available": -1, "max": -1 },
     "cpu_limit": { "used": -1, "available": -1, "max": -1 },
     "ram_usage": 2772,
@@ -43,8 +43,29 @@
             }
         }
     ],
-    "total_resources": null,
-    "self_delegated_bandwidth": null,
+    "total_resources": {
+      "owner": "test",
+      "net_weight": "51.0000 EOS",
+      "cpu_weight": "51.0000 EOS",
+      "ram_bytes": 10957505
+    },
+    "self_delegated_bandwidth": {
+      "from": "test",
+      "to": "test",
+      "net_weight": "51.0000 EOS",
+      "cpu_weight": "51.0000 EOS"
+    },
     "refund_request": null,
-    "voter_info": null
+    "voter_info": {
+        "owner": "test",
+        "proxy": "",
+        "producers": [],
+        "staked": 1020000,
+        "last_vote_weight": "0.00000000000000000",
+        "proxied_vote_weight": "0.00000000000000000",
+        "is_proxy": 0,
+        "flags1": 0,
+        "reserved2": 0,
+        "reserved3": "0 "
+      }
 }
