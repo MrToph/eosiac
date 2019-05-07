@@ -132,6 +132,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
         ]
     }
 
+    // TODO: @MrToph: Add transfer action such that account has funds
     return actions
 }
 
