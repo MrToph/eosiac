@@ -55,3 +55,12 @@ jungle:
   accounts_manager: eosio # account signing the new_account actions (needed when creating the accounts for the first time)
   funds_manager: eosio # account distributing tokens to accounts (liquid ones but also for staking)
   ram_manager: eosio # account buying RAM for accounts
+
+  accounts:
+    cryptoshipxx:
+      cpu:
+        - delegate_to: cryptoshipxx
+          amount: 10000 # 1 EOS
+      net:
+        - delegate_to: cryptoshipxx
+          amount: 10000 # 1 EOS

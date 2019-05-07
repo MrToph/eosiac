@@ -68,11 +68,24 @@ const getSteps = ({env}) => {
         /* eslint-enable no-await-in-loop */
     }
 
+    const updateBandwidth = async () => {
+        /* eslint-disable no-await-in-loop */
+        for (const account of accounts) {
+            const actions = await account.updateBandwidth({env})
+            if (actions) {
+                await performTransaction({sendTransaction, actions})
+                utils.log(utils.chalk.green(`NET/CPU bought for "${account.name}".`))
+            }
+        }
+        /* eslint-enable no-await-in-loop */
+    }
+
     return {
         fetchAccounts,
         createAccounts,
         updateAuth,
         updateRam,
+        updateBandwidth,
     }
 }
 

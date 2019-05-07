@@ -1,8 +1,8 @@
 /* eslint no-underscore-dangle: ["error", { "allowAfterThis": true }] */
-const get = require(`lodash/get`)
 const isEqual = require(`lodash/isEqual`)
 const sortBy = require(`lodash/sortBy`)
-const utils = require(`./utils`)
+const utils = require(`../utils`)
+const getBandwidthActions = require(`./bandwidth`)
 
 const parsePermission = p => {
     const match = p.match(
@@ -127,6 +127,24 @@ class Account {
                 return
             }
             throw error
+        }
+
+        try {
+            this.currentState.stakes = (await api.rpc.get_table_rows({
+                json: true,
+                code: `eosio`,
+                scope: this.name,
+                table: `delband`,
+                lower_bound: 0,
+                upper_bound: -1,
+                limit: 9999,
+            })).rows
+        } catch (error) {
+            if (/is not specified in the ABI/i.test(error.message)) {
+                // running a local network where eosio is not deployed
+            } else {
+                throw error
+            }
         }
     }
 
@@ -261,6 +279,30 @@ class Account {
                 bytes: bytesToPurchase,
             },
         }
+    }
+
+    async updateBandwidth({env}) {
+        this._assertCreated()
+
+        if (!this.cpu && !this.net) {
+            utils.silent(`No CPU/NET stakes configured for ${this.name}.`)
+
+            return null
+        }
+
+        if (!this.currentState.stakes) {
+            utils.log(
+                `No on-chain CPU/NET stakes found from ${
+                    this.name
+                }. Probably running a local network. Skipping CPU/NET purchase.`,
+            )
+
+            return null
+        }
+
+        const actions = getBandwidthActions({account: this, env})
+
+        return !Array.isArray(actions) || actions.length === 0 ? null : actions
     }
 }
 
