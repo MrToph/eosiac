@@ -1,5 +1,5 @@
 const cloneDeep = require(`lodash/cloneDeep`)
-const Account = require(`../account`)
+const Account = require(`../index`)
 const setup = require(`./setup`)
 
 const {env, accountConfig, existingAccount} = setup
