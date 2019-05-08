@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`account.updateRam returns updateRam action when not enough RAM 1`] = `
+Object {
+  "account": "eosio",
+  "authorization": Array [
+    Object {
+      "actor": "rammngr",
+      "permission": "active",
+    },
+  ],
+  "data": Object {
+    "bytes": 154793,
+    "payer": "rammngr",
+    "receiver": "test",
+  },
+  "name": "buyrambytes",
+}
+`;

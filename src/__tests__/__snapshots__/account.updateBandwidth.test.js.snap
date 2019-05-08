@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`account.updateBandwidth returns both delegatebw & undelegatebw action when having more NET but less CPU 1`] = `
+Array [
+  Object {
+    "account": "eosio.token",
+    "authorization": Array [
+      Object {
+        "actor": "fundsmngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "asset": "90.0000 EOS",
+      "from": "fundsmngr",
+      "memo": "Fund CPU/NET staking",
+      "to": "test",
+    },
+    "name": "transfer",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "receiver": "test",
+      "unstake_cpu_quantity": "0.0000 EOS",
+      "unstake_net_quantity": "80.0000 EOS",
+    },
+    "name": "undelegatebw",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "receiver": "test",
+      "stake_cpu_quantity": "90.0000 EOS",
+      "stake_net_quantity": "0.0000 EOS",
+      "transfer": false,
+    },
+    "name": "delegatebw",
+  },
+]
+`;
+
+exports[`account.updateBandwidth returns single delegatebw action when having less NET/CPU 1`] = `
+Array [
+  Object {
+    "account": "eosio.token",
+    "authorization": Array [
+      Object {
+        "actor": "fundsmngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "asset": "120.0000 EOS",
+      "from": "fundsmngr",
+      "memo": "Fund CPU/NET staking",
+      "to": "test",
+    },
+    "name": "transfer",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "receiver": "test",
+      "stake_cpu_quantity": "50.0000 EOS",
+      "stake_net_quantity": "70.0000 EOS",
+      "transfer": false,
+    },
+    "name": "delegatebw",
+  },
+]
+`;
+
+exports[`account.updateBandwidth returns single undelegatebw action when having more NET/CPU 1`] = `
+Array [
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "receiver": "test",
+      "unstake_cpu_quantity": "100.0000 EOS",
+      "unstake_net_quantity": "80.0000 EOS",
+    },
+    "name": "undelegatebw",
+  },
+]
+`;
