@@ -13,6 +13,11 @@ const getDesiredDelegationsPerAccount = ({cpu = [], net = []}) => {
     return merged
 }
 
+const TOKEN_SYMBOL = {
+    symbol: `EOS`,
+    precision: 4,
+}
+
 const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
     if (deltaNet === 0 && deltaCpu === 0) {
         return []
@@ -28,7 +33,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                     name: `delegatebw`,
                     authorization: [
                         {
-                            actor: env.funds_manager,
+                            actor: from,
                             permission: `active`,
                         },
                     ],
@@ -37,13 +42,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                         receiver: to,
                         stake_net_quantity: utils.formatAsset({
                             amount: deltaNet,
-                            symbol: `EOS`,
-                            precision: 4,
+                            symbol: TOKEN_SYMBOL,
                         }),
                         stake_cpu_quantity: utils.formatAsset({
                             amount: deltaCpu,
-                            symbol: `EOS`,
-                            precision: 4,
+                            symbol: TOKEN_SYMBOL,
                         }),
                         transfer: false,
                     },
@@ -56,7 +59,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                     name: `undelegatebw`,
                     authorization: [
                         {
-                            actor: env.funds_manager,
+                            actor: from,
                             permission: `active`,
                         },
                     ],
@@ -65,13 +68,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                         receiver: to,
                         unstake_net_quantity: utils.formatAsset({
                             amount: -deltaNet,
-                            symbol: `EOS`,
-                            precision: 4,
+                            symbol: TOKEN_SYMBOL,
                         }),
                         unstake_cpu_quantity: utils.formatAsset({
                             amount: -deltaCpu,
-                            symbol: `EOS`,
-                            precision: 4,
+                            symbol: TOKEN_SYMBOL,
                         }),
                     },
                 },
@@ -82,35 +83,10 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
         actions = [
             {
                 account: `eosio`,
-                name: `delegatebw`,
-                authorization: [
-                    {
-                        actor: env.funds_manager,
-                        permission: `active`,
-                    },
-                ],
-                data: {
-                    from,
-                    receiver: to,
-                    stake_net_quantity: utils.formatAsset({
-                        amount: deltaNet > 0 ? deltaNet : 0,
-                        symbol: `EOS`,
-                        precision: 4,
-                    }),
-                    stake_cpu_quantity: utils.formatAsset({
-                        amount: deltaCpu > 0 ? deltaCpu : 0,
-                        symbol: `EOS`,
-                        precision: 4,
-                    }),
-                    transfer: false,
-                },
-            },
-            {
-                account: `eosio`,
                 name: `undelegatebw`,
                 authorization: [
                     {
-                        actor: env.funds_manager,
+                        actor: from,
                         permission: `active`,
                     },
                 ],
@@ -119,20 +95,63 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                     receiver: to,
                     unstake_net_quantity: utils.formatAsset({
                         amount: deltaNet < 0 ? -deltaNet : 0,
-                        symbol: `EOS`,
-                        precision: 4,
+                        symbol: TOKEN_SYMBOL,
                     }),
                     unstake_cpu_quantity: utils.formatAsset({
                         amount: deltaCpu < 0 ? -deltaCpu : 0,
-                        symbol: `EOS`,
-                        precision: 4,
+                        symbol: TOKEN_SYMBOL,
                     }),
+                },
+            },
+            {
+                account: `eosio`,
+                name: `delegatebw`,
+                authorization: [
+                    {
+                        actor: from,
+                        permission: `active`,
+                    },
+                ],
+                data: {
+                    from,
+                    receiver: to,
+                    stake_net_quantity: utils.formatAsset({
+                        amount: deltaNet > 0 ? deltaNet : 0,
+                        symbol: TOKEN_SYMBOL,
+                    }),
+                    stake_cpu_quantity: utils.formatAsset({
+                        amount: deltaCpu > 0 ? deltaCpu : 0,
+                        symbol: TOKEN_SYMBOL,
+                    }),
+                    transfer: false,
                 },
             },
         ]
     }
 
-    // TODO: @MrToph: Add transfer action such that account has funds
+    // could be that unstaking is not received to this account
+    // therefore we cannot simply do deltaCpu + deltaNet
+    const fundAmount = (deltaCpu > 0 ? deltaCpu : 0) + (deltaNet > 0 ? deltaNet : 0)
+    if (fundAmount) {
+        // fund this staking
+        actions.unshift({
+            account: `eosio.token`,
+            name: `transfer`,
+            authorization: [
+                {
+                    actor: env.funds_manager,
+                    permission: `active`,
+                },
+            ],
+            data: {
+                from: env.funds_manager,
+                to: from,
+                asset: utils.formatAsset({amount: fundAmount, symbol: TOKEN_SYMBOL}),
+                memo: `Fund CPU/NET staking`,
+            },
+        })
+    }
+
     return actions
 }
 
@@ -144,10 +163,18 @@ const getBandwidthActions = ({account, env}) => {
     const actions = desiredDelegations.map(del => {
         const currentStake = account.currentState.stakes.find(s => s.to === del.to)
 
-        const currentNet = get(currentStake, `net_weight`, `0.0000 EOS`)
+        const currentNet = get(
+            currentStake,
+            `net_weight`,
+            utils.formatAsset({amount: 0, symbol: TOKEN_SYMBOL}),
+        )
             .split(` `)[0]
             .replace(/\./, ``)
-        const currentCpu = get(currentStake, `cpu_weight`, `0.0000 EOS`)
+        const currentCpu = get(
+            currentStake,
+            `cpu_weight`,
+            utils.formatAsset({amount: 0, symbol: TOKEN_SYMBOL}),
+        )
             .split(` `)[0]
             .replace(/\./, ``)
 

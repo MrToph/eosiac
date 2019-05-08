@@ -1,4 +1,4 @@
-function formatAsset({amount, symbol, precision}) {
+function formatAsset({amount, symbol: {symbol, precision}}) {
     let s = String(amount)
     while (s.length < precision + 1) {
         s = `0${s}`

@@ -172,10 +172,42 @@ Array [
 exports[`account.updateBandwidth returns both delegatebw & undelegatebw action when having more NET but less CPU 1`] = `
 Array [
   Object {
-    "account": "eosio",
+    "account": "eosio.token",
     "authorization": Array [
       Object {
         "actor": "fundsmngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "asset": "90.0000 EOS",
+      "from": "fundsmngr",
+      "memo": "Fund CPU/NET staking",
+      "to": "test",
+    },
+    "name": "transfer",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "receiver": "test",
+      "unstake_cpu_quantity": "0.0000 EOS",
+      "unstake_net_quantity": "80.0000 EOS",
+    },
+    "name": "undelegatebw",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
         "permission": "active",
       },
     ],
@@ -188,8 +220,13 @@ Array [
     },
     "name": "delegatebw",
   },
+]
+`;
+
+exports[`account.updateBandwidth returns single delegatebw action when having less NET/CPU 1`] = `
+Array [
   Object {
-    "account": "eosio",
+    "account": "eosio.token",
     "authorization": Array [
       Object {
         "actor": "fundsmngr",
@@ -197,23 +234,18 @@ Array [
       },
     ],
     "data": Object {
-      "from": "test",
-      "receiver": "test",
-      "unstake_cpu_quantity": "0.0000 EOS",
-      "unstake_net_quantity": "80.0000 EOS",
+      "asset": "120.0000 EOS",
+      "from": "fundsmngr",
+      "memo": "Fund CPU/NET staking",
+      "to": "test",
     },
-    "name": "undelegatebw",
+    "name": "transfer",
   },
-]
-`;
-
-exports[`account.updateBandwidth returns single delegatebw action when having less NET/CPU 1`] = `
-Array [
   Object {
     "account": "eosio",
     "authorization": Array [
       Object {
-        "actor": "fundsmngr",
+        "actor": "test",
         "permission": "active",
       },
     ],
@@ -235,7 +267,7 @@ Array [
     "account": "eosio",
     "authorization": Array [
       Object {
-        "actor": "fundsmngr",
+        "actor": "test",
         "permission": "active",
       },
     ],
