@@ -27,6 +27,7 @@ async function apply(envName, options) {
             updateAuth,
             updateRam,
             updateBandwidth,
+            updateCode,
         } = steps.getSteps({env})
         await fetchAccounts()
         const createdAccounts = await createAccounts()
@@ -34,6 +35,7 @@ async function apply(envName, options) {
         await updateAuth()
         await updateRam()
         await updateBandwidth()
+        await updateCode()
     }
 
     utils.log(chalk.green`Success!`)

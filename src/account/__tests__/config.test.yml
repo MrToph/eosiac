@@ -31,5 +31,5 @@ test:
         - account: eosio.token
           symbol: EOS
           amount: 10000 # 1 EOS (unstaked)
-      code: contracts/hello.wasm
-      abi: contracts/hello.abi
+      code: examples/contracts/hello/hello.wasm
+      abi: examples/contracts/hello/hello.abi

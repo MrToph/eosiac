@@ -83,7 +83,6 @@ class Account {
             const codeInfo = await api.rpc.fetch(`/v1/chain/get_raw_abi`, {
                 account_name: this.name,
             })
-            console.log(codeInfo)
             this.currentState.code_hash = codeInfo.code_hash
             this.currentState.abi_hash = codeInfo.abi_hash
             // no error => account already exists
@@ -277,7 +276,7 @@ class Account {
     async updateCode({env}) {
         this._assertCreated()
 
-        if (!this.wasm && !this.abi) {
+        if (!this.code && !this.abi) {
             utils.silent(`No Code/ABI configured for ${this.name}.`)
 
             return null

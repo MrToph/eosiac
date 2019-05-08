@@ -46,8 +46,8 @@ dev:
         - account: eosio.token
           symbol: EOS
           amount: 10000 # 1 EOS (unstaked)
-      code: contracts/dapptoken/dapptoken.wasm
-      abi: contracts/dapptoken/dapptoken.abi
+      code: examples/contracts/hello/hello.wasm
+      abi: examples/contracts/hello/hello.abi
 
 jungle:
   chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473

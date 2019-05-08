@@ -80,12 +80,25 @@ const getSteps = ({env}) => {
         /* eslint-enable no-await-in-loop */
     }
 
+    const updateCode = async () => {
+        /* eslint-disable no-await-in-loop */
+        for (const account of accounts) {
+            const actions = await account.updateCode({env})
+            if (actions) {
+                await performTransaction({sendTransaction, actions})
+                utils.log(utils.chalk.green(`Code/ABI updated for "${account.name}".`))
+            }
+        }
+        /* eslint-enable no-await-in-loop */
+    }
+
     return {
         fetchAccounts,
         createAccounts,
         updateAuth,
         updateRam,
         updateBandwidth,
+        updateCode,
     }
 }
 
