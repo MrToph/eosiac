@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allowAfterThis": true }] */
 const utils = require(`../utils`)
 const getBandwidthActions = require(`./bandwidth`)
+const getCodeActions = require(`./code`)
 const permissions = require(`./permissions`)
 
 class Account {
@@ -77,6 +78,14 @@ class Account {
             await utils.sleep(delay)
             utils.silent(`Checking account "${this.name}" ...`)
             this.currentState = await api.rpc.get_account(this.name)
+            // get_raw_abi not supported yet by eosjs
+            // https://github.com/EOSIO/eosjs/blob/master/src/eosjs-jsonrpc.ts#L121
+            const codeInfo = await api.rpc.fetch(`/v1/chain/get_raw_abi`, {
+                account_name: this.name,
+            })
+            console.log(codeInfo)
+            this.currentState.code_hash = codeInfo.code_hash
+            this.currentState.abi_hash = codeInfo.abi_hash
             // no error => account already exists
             utils.silent(`Account "${this.name}" exists.`)
         } catch (error) {
@@ -261,6 +270,28 @@ class Account {
         }
 
         const actions = getBandwidthActions({account: this, env})
+
+        return !Array.isArray(actions) || actions.length === 0 ? null : actions
+    }
+
+    async updateCode({env}) {
+        this._assertCreated()
+
+        if (!this.wasm && !this.abi) {
+            utils.silent(`No Code/ABI configured for ${this.name}.`)
+
+            return null
+        }
+
+        if (!this.currentState.code_hash || !this.currentState.abi_hash) {
+            throw new Error(
+                `Account "${
+                    this.name
+                }" does not have any valid code_hash or abi_hash fields. Something is wrong.`,
+            )
+        }
+
+        const actions = getCodeActions({account: this, env})
 
         return !Array.isArray(actions) || actions.length === 0 ? null : actions
     }
