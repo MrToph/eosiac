@@ -77,7 +77,7 @@ const getSteps = ({env}) => {
             const actions = await account.updateBandwidth({env})
             if (actions) {
                 await performTransaction({sendTransaction, actions})
-                utils.log(utils.chalk.green(`NET/CPU bought for "${account.name}".`))
+                utils.log(utils.chalk.green(`NET/CPU updated for "${account.name}".`))
             }
         }
         /* eslint-enable no-await-in-loop */

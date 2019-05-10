@@ -1,9 +1,21 @@
 /* eslint no-underscore-dangle: ["error", { "allowAfterThis": true }] */
+const get = require(`lodash/get`)
 const utils = require(`../utils`)
 const getBandwidthActions = require(`./bandwidth`)
 const getCodeActions = require(`./code`)
 const getTokenActions = require(`./token`)
 const permissions = require(`./permissions`)
+
+const isLocalBlockchain = ({env}) => {
+    const accountsManager = get(env, `accounts.${env.accounts_manager}`)
+    if (!accountsManager) {
+        throw new Error(`Accounts manager account "${env.accounts_manager}" must be created first.`)
+    }
+
+    const accountsManagerRam = accountsManager.currentState.ram_quota
+
+    return accountsManagerRam === -1 || !Number.isFinite(accountsManagerRam)
+}
 
 class Account {
     constructor(name, desiredState) {
@@ -175,7 +187,7 @@ class Account {
             throw new Error(`Missing active and owner permissions to create account "${this.name}"`)
         }
 
-        return [
+        const actions = [
             {
                 account: `eosio`,
                 name: `newaccount`,
@@ -192,8 +204,11 @@ class Account {
                     active: auth.active,
                 },
             },
+        ]
+
+        if (!isLocalBlockchain({env})) {
             // need to buy ram in same transaction, otherwise newaccount fails
-            {
+            actions.push({
                 account: `eosio`,
                 name: `buyrambytes`,
                 authorization: [
@@ -205,10 +220,12 @@ class Account {
                 data: {
                     payer: env.ram_manager,
                     receiver: this.name,
-                    bytes: 2996,
+                    bytes: 3072,
                 },
-            },
-        ]
+            })
+        }
+
+        return actions
     }
 
     async updateAuth({env}) {

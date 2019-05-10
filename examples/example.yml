@@ -12,7 +12,7 @@ dev:
         type: key
         private_keys:
           - 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-    dappyfdshjk:
+    dappy34:
       signature:
         type: key
         private_keys:
@@ -47,10 +47,3 @@ dev:
           amount: 1.0000 EOS
       code: examples/contracts/hello/hello.wasm
       abi: examples/contracts/hello/hello.abi
-
-jungle:
-  chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473
-  node_endpoint: https://jungle2.cryptolions.io:443
-  accounts_manager: eosiactester # account signing the new_account actions (needed when creating the accounts for the first time)
-  funds_manager: eosiactester # account distributing tokens to accounts (liquid ones but also for staking)
-  ram_manager: eosiactester # account buying RAM for accounts
