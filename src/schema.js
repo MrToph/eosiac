@@ -12,10 +12,8 @@ const stakedResourceSchema = Joi.object({
 
 const extendedAssetSchema = Joi.object({
     account: nameSchema.required(),
-    symbol: Joi.string().required(),
-    amount: Joi.number()
-        .integer()
-        .positive()
+    amount: Joi.string()
+        .regex(/^[\d]+\.[\d]* [A-Z]{3,7}$/)
         .required(),
 })
 

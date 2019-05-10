@@ -48,8 +48,7 @@ dev:
           amount: 1e4 # 1 EOS
       tokens:
         - account: eosio.token
-          symbol: EOS
-          amount: 10000 # 1 EOS (unstaked)
+          amount: 1.0000 EOS # 1 EOS (unstaked)
       code: contracts/dapptoken/dapptoken.wasm
       abi: contracts/dapptoken/dapptoken.abi
 

@@ -2,6 +2,7 @@
 const utils = require(`../utils`)
 const getBandwidthActions = require(`./bandwidth`)
 const getCodeActions = require(`./code`)
+const getTokenActions = require(`./token`)
 const permissions = require(`./permissions`)
 
 class Account {
@@ -76,7 +77,6 @@ class Account {
     async fetch({api, delay = 0}) {
         try {
             await utils.sleep(delay)
-            utils.silent(`Checking account "${this.name}" ...`)
             this.currentState = await api.rpc.get_account(this.name)
             // get_raw_abi not supported yet by eosjs
             // https://github.com/EOSIO/eosjs/blob/master/src/eosjs-jsonrpc.ts#L121
@@ -116,6 +116,54 @@ class Account {
         }
     }
 
+    async fetchTokens({api, delay = 0}) {
+        if (!this.tokens || this.tokens.length === 0) {
+            this.currentState.tokens = []
+
+            return
+        }
+
+        try {
+            await utils.sleep(delay)
+            const accountTablePromises = this.tokens.map(extendedAsset =>
+                api.rpc.get_table_rows({
+                    json: true,
+                    code: extendedAsset.account,
+                    scope: this.name,
+                    table: `accounts`,
+                    lower_bound: 0,
+                    upper_bound: -1,
+                    limit: 9999,
+                }),
+            )
+            const accountTableResults = (await Promise.all(accountTablePromises)).map(
+                result => result.rows,
+            )
+            const tokenAmounts = this.tokens.map((extendedAsset, index) => {
+                const expectedSymbol = utils.decomposeAsset(extendedAsset.amount).symbol
+                const tokensOnContract = accountTableResults[index]
+
+                const foundToken = tokensOnContract.find(row => {
+                    const {
+                        symbol: {symbol, precision},
+                    } = utils.decomposeAsset(row.balance)
+
+                    return (
+                        expectedSymbol.symbol === symbol && expectedSymbol.precision === precision
+                    )
+                })
+
+                return foundToken
+                    ? foundToken.balance
+                    : utils.formatAsset({amount: 0, symbol: expectedSymbol})
+            })
+            this.currentState.tokens = tokenAmounts
+            utils.silent(`Token balances for account "${this.name}" fetched.`)
+        } catch (error) {
+            throw error
+        }
+    }
+
     async create({env}) {
         // account already created
         if (this._isCreated()) {
@@ -127,22 +175,40 @@ class Account {
             throw new Error(`Missing active and owner permissions to create account "${this.name}"`)
         }
 
-        return {
-            account: `eosio`,
-            name: `newaccount`,
-            authorization: [
-                {
-                    actor: env.accounts_manager,
-                    permission: `active`,
+        return [
+            {
+                account: `eosio`,
+                name: `newaccount`,
+                authorization: [
+                    {
+                        actor: env.accounts_manager,
+                        permission: `active`,
+                    },
+                ],
+                data: {
+                    creator: env.accounts_manager,
+                    name: this.name,
+                    owner: auth.owner,
+                    active: auth.active,
                 },
-            ],
-            data: {
-                creator: env.accounts_manager,
-                name: this.name,
-                owner: auth.owner,
-                active: auth.active,
             },
-        }
+            // need to buy ram in same transaction, otherwise newaccount fails
+            {
+                account: `eosio`,
+                name: `buyrambytes`,
+                authorization: [
+                    {
+                        actor: env.ram_manager,
+                        permission: `active`,
+                    },
+                ],
+                data: {
+                    payer: env.ram_manager,
+                    receiver: this.name,
+                    bytes: 2996,
+                },
+            },
+        ]
     }
 
     async updateAuth({env}) {
@@ -226,7 +292,9 @@ class Account {
             )
         }
 
-        if (bytesToPurchase <= 0) {
+        const RAM_FEE_THRESHOLD = 64
+        // buyrambytes is not exact as it converts the bytes to EOS, subtracts fee, and converts back
+        if (bytesToPurchase <= RAM_FEE_THRESHOLD) {
             utils.silent(`Account "${this.name}"'s RAM is sufficient (${currentRam / 1024} kB).`)
 
             return null
@@ -244,7 +312,8 @@ class Account {
             data: {
                 payer: env.ram_manager,
                 receiver: this.name,
-                bytes: bytesToPurchase,
+                // 0.5% ram fee
+                bytes: Math.ceil((bytesToPurchase * 200) / 199),
             },
         }
     }
@@ -291,6 +360,28 @@ class Account {
         }
 
         const actions = getCodeActions({account: this, env})
+
+        return !Array.isArray(actions) || actions.length === 0 ? null : actions
+    }
+
+    async updateTokens({env}) {
+        this._assertCreated()
+
+        if (!this.tokens || this.tokens.length === 0) {
+            utils.silent(`No tokens configured for ${this.name}.`)
+
+            return null
+        }
+
+        if (!this.currentState.tokens) {
+            throw new Error(
+                `Account "${
+                    this.name
+                }" does not have any valid token balances. Something is wrong.`,
+            )
+        }
+
+        const actions = getTokenActions({account: this, env})
 
         return !Array.isArray(actions) || actions.length === 0 ? null : actions
     }

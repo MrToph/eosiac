@@ -26,10 +26,9 @@ test:
           amount: 1e6
       net:
         - delegate_to: test
-          amount: 1200000 # 1 EOS
+          amount: 1200000
       tokens:
         - account: eosio.token
-          symbol: EOS
-          amount: 10000 # 1 EOS (unstaked)
+          amount: 100.0000 EOS
       code: examples/contracts/hello/hello.wasm
       abi: examples/contracts/hello/hello.abi

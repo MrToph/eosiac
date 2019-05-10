@@ -1,14 +1,9 @@
 const fs = require(`fs`)
 const path = require(`path`)
 const crypto = require(`crypto`)
-
-const {Serialize, Api, JsonRpc} = require(`eosjs`)
+const {Serialize, Api} = require(`eosjs`)
 const {TextEncoder, TextDecoder} = require(`util`) // node only; native TextEncoder/Decoder
-const get = require(`lodash/get`)
-const keyBy = require(`lodash/keyBy`)
-const merge = require(`lodash/merge`)
-const values = require(`lodash/values`)
-const flatten = require(`lodash/flatten`)
+
 const utils = require(`../utils`)
 
 const loadFileContents = file => {

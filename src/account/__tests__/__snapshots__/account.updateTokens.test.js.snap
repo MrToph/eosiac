@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`account.updateTokens returns negative transfer action 1`] = `
+Array [
+  Object {
+    "account": "eosio.token",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "test",
+      "memo": "Fund token",
+      "quantity": "100.0000 EOS",
+      "to": "fundsmngr",
+    },
+    "name": "transfer",
+  },
+]
+`;
+
+exports[`account.updateTokens returns positive transfer action 1`] = `
+Array [
+  Object {
+    "account": "eosio.token",
+    "authorization": Array [
+      Object {
+        "actor": "fundsmngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "from": "fundsmngr",
+      "memo": "Fund token",
+      "quantity": "90.0000 EOS",
+      "to": "test",
+    },
+    "name": "transfer",
+  },
+]
+`;

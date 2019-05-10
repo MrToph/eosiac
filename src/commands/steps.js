@@ -20,6 +20,9 @@ const getSteps = ({env}) => {
     const fetchAccounts = async (accountsToFetch = accounts, delay) =>
         Promise.all(accountsToFetch.map(account => account.fetch({api, delay})))
 
+    const fetchTokens = async (accountsToFetch = accounts, delay) =>
+        Promise.all(accountsToFetch.map(account => account.fetchTokens({api, delay})))
+
     const createAccounts = async () => {
         const createdAccounts = []
         /* eslint-disable no-await-in-loop */
@@ -92,13 +95,27 @@ const getSteps = ({env}) => {
         /* eslint-enable no-await-in-loop */
     }
 
+    const updateTokens = async () => {
+        /* eslint-disable no-await-in-loop */
+        for (const account of accounts) {
+            const actions = await account.updateTokens({env})
+            if (actions) {
+                await performTransaction({sendTransaction, actions})
+                utils.log(utils.chalk.green(`Tokens updated for "${account.name}".`))
+            }
+        }
+        /* eslint-enable no-await-in-loop */
+    }
+
     return {
         fetchAccounts,
+        fetchTokens,
         createAccounts,
         updateAuth,
         updateRam,
         updateBandwidth,
         updateCode,
+        updateTokens,
     }
 }
 

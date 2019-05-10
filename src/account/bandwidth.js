@@ -132,7 +132,8 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
     // could be that unstaking is not received to this account
     // therefore we cannot simply do deltaCpu + deltaNet
     const fundAmount = (deltaCpu > 0 ? deltaCpu : 0) + (deltaNet > 0 ? deltaNet : 0)
-    if (fundAmount) {
+
+    if (fundAmount && from !== env.funds_manager) {
         // fund this staking
         actions.unshift({
             account: `eosio.token`,
@@ -146,7 +147,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
             data: {
                 from: env.funds_manager,
                 to: from,
-                asset: utils.formatAsset({amount: fundAmount, symbol: TOKEN_SYMBOL}),
+                quantity: utils.formatAsset({amount: fundAmount, symbol: TOKEN_SYMBOL}),
                 memo: `Fund CPU/NET staking`,
             },
         })

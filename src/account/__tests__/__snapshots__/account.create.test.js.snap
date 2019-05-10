@@ -1,55 +1,72 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`account.create returns new account action on empty current state 1`] = `
-Object {
-  "account": "eosio",
-  "authorization": Array [
-    Object {
-      "actor": "accntmngr",
-      "permission": "active",
-    },
-  ],
-  "data": Object {
-    "active": Object {
-      "accounts": Array [
-        Object {
-          "permission": Object {
-            "actor": "dapptoken",
-            "permission": "eosio.code",
+Array [
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "accntmngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "active": Object {
+        "accounts": Array [
+          Object {
+            "permission": Object {
+              "actor": "dapptoken",
+              "permission": "eosio.code",
+            },
+            "weight": 1,
           },
-          "weight": 1,
-        },
-      ],
-      "keys": Array [
-        Object {
-          "key": "EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x",
-          "weight": 1,
-        },
-      ],
-      "parent": "owner",
-      "threshold": 2,
-      "waits": Array [
-        Object {
-          "wait_sec": 600,
-          "weight": 1,
-        },
-      ],
+        ],
+        "keys": Array [
+          Object {
+            "key": "EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x",
+            "weight": 1,
+          },
+        ],
+        "parent": "owner",
+        "threshold": 2,
+        "waits": Array [
+          Object {
+            "wait_sec": 600,
+            "weight": 1,
+          },
+        ],
+      },
+      "creator": "accntmngr",
+      "name": "test",
+      "owner": Object {
+        "accounts": Array [],
+        "keys": Array [
+          Object {
+            "key": "EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi",
+            "weight": 1,
+          },
+        ],
+        "parent": "",
+        "threshold": 1,
+        "waits": Array [],
+      },
     },
-    "creator": "accntmngr",
-    "name": "test",
-    "owner": Object {
-      "accounts": Array [],
-      "keys": Array [
-        Object {
-          "key": "EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi",
-          "weight": 1,
-        },
-      ],
-      "parent": "",
-      "threshold": 1,
-      "waits": Array [],
-    },
+    "name": "newaccount",
   },
-  "name": "newaccount",
-}
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "rammngr",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "bytes": 2996,
+      "payer": "rammngr",
+      "receiver": "test",
+    },
+    "name": "buyrambytes",
+  },
+]
 `;

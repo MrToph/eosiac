@@ -11,9 +11,9 @@ Array [
       },
     ],
     "data": Object {
-      "asset": "90.0000 EOS",
       "from": "fundsmngr",
       "memo": "Fund CPU/NET staking",
+      "quantity": "90.0000 EOS",
       "to": "test",
     },
     "name": "transfer",
@@ -65,9 +65,9 @@ Array [
       },
     ],
     "data": Object {
-      "asset": "120.0000 EOS",
       "from": "fundsmngr",
       "memo": "Fund CPU/NET staking",
+      "quantity": "120.0000 EOS",
       "to": "test",
     },
     "name": "transfer",

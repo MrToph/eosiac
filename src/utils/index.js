@@ -1,11 +1,11 @@
 const logs = require(`./log`)
 const getConfig = require(`./get-config`)
 const sleep = require(`./sleep`)
-const formats = require(`./formats`)
+const asset = require(`./asset`)
 
 module.exports = {
     ...logs,
-    ...formats,
+    ...asset,
     getConfig,
     sleep,
 }
