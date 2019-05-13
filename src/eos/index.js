@@ -16,7 +16,7 @@ function initEos(env) {
             },
             {
                 blocksBehind: 3,
-                expireSeconds: 30,
+                expireSeconds: 10 * 60,
             },
         )
     }

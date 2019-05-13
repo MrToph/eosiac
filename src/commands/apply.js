@@ -1,8 +1,13 @@
+const ScatterJS = require(`scatterjs-core`).default
 const chalk = require(`chalk`)
 const mapValues = require(`lodash/mapValues`)
 const utils = require(`../utils`)
 const Account = require(`../account`)
 const steps = require(`./steps`)
+
+async function cleanup() {
+    await ScatterJS.disconnect()
+}
 
 async function apply(envName, options) {
     const {config, configPath} = utils.getConfig(options.config)
@@ -42,6 +47,12 @@ async function apply(envName, options) {
 
         await fetchTokens()
         await updateTokens()
+
+        try {
+            await cleanup()
+        } catch {
+            // no catch
+        }
     }
 
     utils.log(chalk.green`Success!`)
