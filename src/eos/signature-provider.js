@@ -8,6 +8,7 @@ const {Api} = require(`eosjs`)
 const {JsSignatureProvider} = require(`eosjs/dist/eosjs-jssig`)
 const ScatterJS = require(`scatterjs-core`).default
 const ScatterEOS = require(`scatterjs-plugin-eosjs2`).default
+const {TextEncoder, TextDecoder} = require(`util`) // node only; native TextEncoder/Decoder
 const utils = require(`../utils`)
 
 ScatterJS.plugins(new ScatterEOS())

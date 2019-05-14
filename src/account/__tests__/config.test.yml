@@ -7,6 +7,11 @@ test:
   ram_manager: rammngr
 
   accounts:
+    accntmngr:
+      signature:
+        type: key
+        private_keys:
+          - 5KNxG6KAaoKfE72gvQUdvnunLcx3o8SPiV83VkwmSkGofXtuNPm
     test:
       auth:
         owner:

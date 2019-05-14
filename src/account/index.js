@@ -9,7 +9,9 @@ const permissions = require(`./permissions`)
 const isLocalBlockchain = ({env}) => {
     const accountsManager = get(env, `accounts.${env.accounts_manager}`)
     if (!accountsManager) {
-        throw new Error(`Accounts manager account "${env.accounts_manager}" must be created first.`)
+        throw new Error(
+            `Accounts manager account "${env.accounts_manager}" not configured in accounts.`,
+        )
     }
 
     const accountsManagerRam = accountsManager.currentState.ram_quota

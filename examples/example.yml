@@ -29,8 +29,8 @@ dev:
             - EOS7RTtzjKfoTBt4WR6ZMVgCfuM51fj4AbyzexhCqFWUk8BbK2EG7 2
             - dapptoken@eosio.code 1
             - wait@600 1
-        newnewnew:
-          parent: owner
+        ops:
+          parent: active
           threshold: 1
           permissions:
             - EOS62mKPAN7T48aPdi8ZYRcPFWURgw9JMjz52yxijDAwRV8GwCzmY
@@ -47,3 +47,88 @@ dev:
           amount: 1.0000 EOS
       code: examples/contracts/hello/hello.wasm
       abi: examples/contracts/hello/hello.abi
+
+jungle:
+  chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473
+  node_endpoint: https://jungle2.cryptolions.io:443
+  accounts_manager: eosiactester # account signing the new_account actions (needed when creating the accounts for the first time)
+  funds_manager: eosiactester # account distributing tokens to accounts (liquid ones but also for staking)
+  ram_manager: eosiactester # account buying RAM for accounts
+
+  accounts:
+    eosiactester:
+      signature:
+        type: key
+        private_keys:
+          - 5J2jxjcEmsMFzfMnWJaN6Wty3wVnGSNfWo8wEzbCgUwNVsRcAU9 # active
+          - 5KdXj5QskRzgAVmkYM5zZzmWZr4LqD5XUvvenJ5Ejns5V3bnNE8 # owner
+      cpu:
+        - delegate_to: eosiactesv22
+          amount: 100000
+      net:
+        - delegate_to: eosiactesv22
+          amount: 10000
+      ram: 1024000
+    eosiactesv11:
+      signature:
+        type: key
+        private_keys:
+          - 5J7Fv2FNgYqqoF4ZFSPY1z5oEuxAw1hAmBtcECSGvVPX7oKMi4F # active
+      auth:
+        owner:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+        active:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+      cpu:
+        - delegate_to: eosiactesv11
+          amount: 10000
+      net:
+        - delegate_to: eosiactesv11
+          amount: 10000
+      ram: 100000
+      tokens:
+        - account: eosio.token
+          amount: 0.1337 EOS
+      code: examples/contracts/hello/hello.wasm
+      abi: examples/contracts/hello/hello.abi
+    eosiactesv22:
+      signature:
+        type: scatter
+      auth:
+        owner:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+        active:
+          threshold: 1
+          permissions:
+            - EOS5sLzxVAoaDHqsZv7Z6PSZiQYGeaFek98VnLup4UMm8pgpfCRY1 1 # scatter
+            # - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR 1 # key
+      tokens:
+        - account: eosio.token
+          amount: 0.1222 EOS
+    eosiactesv33:
+      signature:
+        type: key
+        private_keys:
+          - 5J7Fv2FNgYqqoF4ZFSPY1z5oEuxAw1hAmBtcECSGvVPX7oKMi4F # active
+      auth:
+        owner:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+        active:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+      cpu:
+        - delegate_to: eosiactesv33
+          amount: 10000
+      net:
+        - delegate_to: eosiactesv33
+          amount: 10000
+      ram: 20000
+      tokens:
+        - account: eosio.token
+          amount: 0.1228 EOS
+      code: examples/contracts/test1/hello.wasm
+      abi: examples/contracts/test1/hello.abi
