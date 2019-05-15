@@ -29,6 +29,7 @@ async function apply(envName, options) {
         const {
             fetchAccounts,
             fetchTokens,
+            fetchPermissionLinks,
             createAccounts,
             updateAuth,
             updateRam,
@@ -40,7 +41,10 @@ async function apply(envName, options) {
         await fetchAccounts()
         const createdAccounts = await createAccounts()
         await fetchAccounts(createdAccounts, 1100)
+
+        await fetchPermissionLinks()
         await updateAuth()
+
         await updateRam()
         await updateBandwidth()
         await updateCode()

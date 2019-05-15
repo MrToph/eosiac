@@ -1,5 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`account.updateAuth returns unlinkauth action when linked but should not be anymore 1`] = `
+Array [
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "account": "test",
+      "auth": Object {
+        "accounts": Array [
+          Object {
+            "permission": Object {
+              "actor": "test",
+              "permission": "active",
+            },
+            "weight": 1,
+          },
+        ],
+        "keys": Array [],
+        "links": null,
+        "parent": "active",
+        "threshold": 1,
+        "waits": Array [],
+      },
+      "parent": "active",
+      "permission": "xtransfer",
+    },
+    "name": "updateauth",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "account": "test",
+      "code": "eosio.token",
+      "type": "transfer",
+    },
+    "name": "unlinkauth",
+  },
+]
+`;
+
 exports[`account.updateAuth returns updateauth action when used with new permission 1`] = `
 Array [
   Object {
@@ -24,6 +75,7 @@ Array [
             "weight": 1,
           },
         ],
+        "links": null,
         "parent": "",
         "threshold": 1,
         "waits": Array [],
@@ -63,6 +115,7 @@ Array [
             "weight": 1,
           },
         ],
+        "links": null,
         "parent": "owner",
         "threshold": 3,
         "waits": Array [
@@ -98,6 +151,7 @@ Array [
           },
         ],
         "keys": Array [],
+        "links": null,
         "parent": "owner",
         "threshold": 2,
         "waits": Array [
@@ -109,6 +163,98 @@ Array [
       },
       "parent": "owner",
       "permission": "newnewnew",
+    },
+    "name": "updateauth",
+  },
+]
+`;
+
+exports[`account.updateAuth returns updateauth and linkauth action when used with new permission 1`] = `
+Array [
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "account": "test",
+      "auth": Object {
+        "accounts": Array [
+          Object {
+            "permission": Object {
+              "actor": "test",
+              "permission": "active",
+            },
+            "weight": 1,
+          },
+        ],
+        "keys": Array [],
+        "links": Array [
+          "eosio.token@transfer",
+        ],
+        "parent": "active",
+        "threshold": 1,
+        "waits": Array [],
+      },
+      "parent": "active",
+      "permission": "xtransfer",
+    },
+    "name": "updateauth",
+  },
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "account": "test",
+      "code": "eosio.token",
+      "requirement": "xtransfer",
+      "type": "transfer",
+    },
+    "name": "linkauth",
+  },
+]
+`;
+
+exports[`account.updateAuth skips linkauth action when already linked 1`] = `
+Array [
+  Object {
+    "account": "eosio",
+    "authorization": Array [
+      Object {
+        "actor": "test",
+        "permission": "active",
+      },
+    ],
+    "data": Object {
+      "account": "test",
+      "auth": Object {
+        "accounts": Array [
+          Object {
+            "permission": Object {
+              "actor": "test",
+              "permission": "active",
+            },
+            "weight": 1,
+          },
+        ],
+        "keys": Array [],
+        "links": Array [
+          "eosio.token@transfer",
+        ],
+        "parent": "active",
+        "threshold": 1,
+        "waits": Array [],
+      },
+      "parent": "active",
+      "permission": "xtransfer",
     },
     "name": "updateauth",
   },

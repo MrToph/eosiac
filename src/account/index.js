@@ -4,7 +4,7 @@ const utils = require(`../utils`)
 const getBandwidthActions = require(`./bandwidth`)
 const getCodeActions = require(`./code`)
 const getTokenActions = require(`./token`)
-const permissions = require(`./permissions`)
+const authHelpers = require(`./auth`)
 
 const isLocalBlockchain = ({env}) => {
     const accountsManager = get(env, `accounts.${env.accounts_manager}`)
@@ -42,10 +42,11 @@ class Account {
                 keys: [],
                 accounts: [],
                 waits: [],
+                links: permission.links || null,
             }
 
             permission.permissions.forEach(p => {
-                const {spec, weight} = permissions.parsePermission(p)
+                const {spec, weight} = authHelpers.parsePermission(p)
 
                 if (spec.startsWith(`wait@`)) {
                     const seconds = Number.parseInt(spec.replace(`wait@`, ``), 10)
@@ -127,6 +128,21 @@ class Account {
             } else {
                 throw error
             }
+        }
+    }
+
+    async fetchPermissionLinks({dfuseClient, delay = 0}) {
+        if (!dfuseClient) {
+            return
+        }
+
+        try {
+            await utils.sleep(delay)
+            const response = await dfuseClient.statePermissionLinks(this.name)
+            this.currentState.linkedPermissions = response.linked_permissions
+            utils.silent(`Link Permissions for account "${this.name}" fetched.`)
+        } catch (error) {
+            throw error
         }
     }
 
@@ -233,52 +249,9 @@ class Account {
     async updateAuth({env}) {
         this._assertCreated()
 
-        const auth = this._getAuthFromConfig()
+        const actions = authHelpers.getAuthActions({account: this, env})
 
-        const permNamesToUpdate = Object.keys(auth)
-            .map(permName => {
-                if (
-                    permissions.permissionNeedsToBeUpdated(
-                        auth[permName],
-                        this.currentState.permissions.find(p => p.perm_name === permName),
-                    )
-                ) {
-                    return permName
-                }
-
-                return null
-            })
-            .filter(Boolean)
-
-        const requiresUpdate = permNamesToUpdate.length > 0
-        if (!requiresUpdate) {
-            utils.silent(`Account "${this.name}"'s permissions are up-to-date.`)
-        } else {
-            utils.silent(
-                `Account "${this.name}"'s permissions (${permNamesToUpdate.join(
-                    ` `,
-                )}) need to be updated.`,
-            )
-        }
-
-        const actions = permNamesToUpdate.map(permName => ({
-            account: `eosio`,
-            name: `updateauth`,
-            authorization: [
-                {
-                    actor: this.name,
-                    permission: `owner`,
-                },
-            ],
-            data: {
-                account: this.name,
-                permission: permName,
-                parent: auth[permName].parent,
-                auth: auth[permName],
-            },
-        }))
-
-        return requiresUpdate ? actions : null
+        return !Array.isArray(actions) || actions.length === 0 ? null : actions
     }
 
     async updateRam({env}) {

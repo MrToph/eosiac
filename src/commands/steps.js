@@ -14,7 +14,7 @@ const performTransaction = async ({sendTransaction, actions}) => {
 }
 
 const getSteps = ({env}) => {
-    const {api, sendTransaction} = eos.initEos(env)
+    const {api, dfuseClient, sendTransaction} = eos.initEos(env)
     const accounts = Object.keys(env.accounts).map(accountName => env.accounts[accountName])
 
     const fetchAccounts = async (accountsToFetch = accounts, delay) =>
@@ -22,6 +22,11 @@ const getSteps = ({env}) => {
 
     const fetchTokens = async (accountsToFetch = accounts, delay) =>
         Promise.all(accountsToFetch.map(account => account.fetchTokens({api, delay})))
+
+    const fetchPermissionLinks = async (accountsToFetch = accounts, delay) =>
+        Promise.all(
+            accountsToFetch.map(account => account.fetchPermissionLinks({dfuseClient, delay})),
+        )
 
     const createAccounts = async () => {
         const createdAccounts = []
@@ -110,6 +115,7 @@ const getSteps = ({env}) => {
     return {
         fetchAccounts,
         fetchTokens,
+        fetchPermissionLinks,
         createAccounts,
         updateAuth,
         updateRam,

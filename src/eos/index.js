@@ -1,11 +1,14 @@
 const initSignatureProvider = require(`./signature-provider`)
 const initApi = require(`./api`)
+const initDfuse = require(`./dfuse`)
 
 let api = null
+let dfuseClient = null
 
 function initEos(env) {
     const signatureProvider = initSignatureProvider(env)
     api = initApi(env, signatureProvider)
+    dfuseClient = initDfuse(env)
 
     const sendTransaction = async args => {
         const actions = Array.isArray(args) ? args : [args]
@@ -21,7 +24,7 @@ function initEos(env) {
         )
     }
 
-    return {api, sendTransaction}
+    return {api, dfuseClient, sendTransaction}
 }
 
 module.exports = {

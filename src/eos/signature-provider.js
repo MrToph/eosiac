@@ -14,10 +14,10 @@ const utils = require(`../utils`)
 ScatterJS.plugins(new ScatterEOS())
 
 const getNetwork = ({env}) => {
-    const matches = /^(https?):\/\/(.*):(\d*)\D*$/.exec(env.node_endpoint)
+    const matches = /^(https?):\/\/(.*):?(\d*)\D*$/.exec(env.node_endpoint)
     if (!matches) {
         throw new Error(
-            `Could not parse EOS HTTP endpoint in env var REACT_APP_EOS_HTTP_ENDPOINT: "${REACT_APP_EOS_HTTP_ENDPOINT}"`,
+            `Could not parse EOS HTTP endpoint in env var node_endpoint: "${env.node_endpoint}"`,
         )
     }
 

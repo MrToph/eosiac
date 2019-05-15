@@ -27,6 +27,7 @@ Array [
             "weight": 1,
           },
         ],
+        "links": null,
         "parent": "owner",
         "threshold": 2,
         "waits": Array [
@@ -46,6 +47,7 @@ Array [
             "weight": 1,
           },
         ],
+        "links": null,
         "parent": "",
         "threshold": 1,
         "waits": Array [],
