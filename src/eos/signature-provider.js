@@ -72,10 +72,10 @@ class CombinedSignatureProvider {
 
     async _loginScatter() {
         await this._connectScatter()
-
         if (this.scatterConnected) {
             const network = getNetwork({env: this.env})
             await this.scatter.forgetIdentity()
+
             this.scatterId = await this.scatter.getIdentity({
                 accounts: [network],
             })
@@ -134,13 +134,13 @@ class CombinedSignatureProvider {
             )
 
             if (foundAuth) {
-                while (
-                    !this.scatterId ||
-                    !this.scatterId.accounts.some(
+                const hasSelectedCorrectly = () =>
+                    this.scatterId &&
+                    this.scatterId.accounts.some(
                         acc =>
                             acc.name === foundAuth.actor && acc.authority === foundAuth.permission,
                     )
-                ) {
+                while (!hasSelectedCorrectly()) {
                     utils.info(
                         `Please select the ${utils.chalk.yellow(
                             foundAuth.actor,
@@ -148,26 +148,33 @@ class CombinedSignatureProvider {
                             foundAuth.permission,
                         )} account in Scatter (Missing keys: ${missingKeys.join(`, `)})`,
                     )
-                    // eslint-disable-next-line no-await-in-loop
-                    await this._loginScatter()
+
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        await this._loginScatter()
+                    } catch (error) {
+                        utils.error(`Scatter Error: ${error.message}`)
+                        break
+                    }
 
                     // check if really selected the correct _permission_ as otherwise scatter fails
                     // even when having same active and owner key and using owner key for active
-                    const hasSelectedCorrectPermission = this.scatterId.accounts.some(
-                        acc =>
-                            acc.name === foundAuth.actor && acc.authority === foundAuth.permission,
-                    )
-                    if (!hasSelectedCorrectPermission) {
-                        const selectedPermission = this.scatterId.accounts.find(
-                            acc => acc.name === foundAuth.actor,
-                        )
-                        utils.info(
-                            `You selected the correct account, but a wrong permission (${
-                                selectedPermission.authority
-                            }). Click on "Show All" and select the ${utils.chalk.yellow(
-                                foundAuth.permission,
-                            )} permission.`,
-                        )
+                    if (this.scatterId && this.scatterId.accounts) {
+                        const hasSelectedCorrectPermission = hasSelectedCorrectly()
+                        if (!hasSelectedCorrectPermission) {
+                            const selectedPermission = this.scatterId.accounts.find(
+                                acc => acc.name === foundAuth.actor,
+                            )
+                            if (selectedPermission) {
+                                utils.info(
+                                    `You selected the correct account, but a wrong permission (${
+                                        selectedPermission.authority
+                                    }). Click on "Show All" and select the ${utils.chalk.yellow(
+                                        foundAuth.permission,
+                                    )} permission.`,
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -176,7 +183,7 @@ class CombinedSignatureProvider {
                     // also clone signArgs as scatter-eos modifies signArgs.serializedTransaction
                     returnValue = await this.scatterSignatureProvider.sign(cloneDeep(signArgs))
                 } catch (error) {
-                    console.error(`Error while signing with Scatter: ${error.message}`)
+                    utils.error(`Error while signing with Scatter: ${error.message}`)
                 }
             }
         }
