@@ -1,5 +1,4 @@
 const program = require(`commander`)
-
 const utils = require(`./utils`)
 const commands = require(`./commands`)
 const packageJson = require(`../package.json`)
@@ -15,6 +14,8 @@ program
         try {
             utils.setVerbose(options.verbose)
             await commands.apply(env, options)
+            // even with cleanup Scatter's socket service does not close immediately
+            process.exit(0)
         } catch (error) {
             utils.error(error.message)
             process.exit(1)

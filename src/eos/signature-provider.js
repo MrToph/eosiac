@@ -136,17 +136,39 @@ class CombinedSignatureProvider {
             if (foundAuth) {
                 while (
                     !this.scatterId ||
-                    !this.scatterId.accounts
-                        .map(acc => acc.name)
-                        .some(accName => accName === foundAuth.actor)
+                    !this.scatterId.accounts.some(
+                        acc =>
+                            acc.name === foundAuth.actor && acc.authority === foundAuth.permission,
+                    )
                 ) {
                     utils.info(
-                        `Please select the ${foundAuth.actor}@${
-                            foundAuth.permission
-                        } account in Scatter (Missing keys: ${missingKeys.join(`, `)})`,
+                        `Please select the ${utils.chalk.yellow(
+                            foundAuth.actor,
+                        )}@${utils.chalk.yellow(
+                            foundAuth.permission,
+                        )} account in Scatter (Missing keys: ${missingKeys.join(`, `)})`,
                     )
                     // eslint-disable-next-line no-await-in-loop
                     await this._loginScatter()
+
+                    // check if really selected the correct _permission_ as otherwise scatter fails
+                    // even when having same active and owner key and using owner key for active
+                    const hasSelectedCorrectPermission = this.scatterId.accounts.some(
+                        acc =>
+                            acc.name === foundAuth.actor && acc.authority === foundAuth.permission,
+                    )
+                    if (!hasSelectedCorrectPermission) {
+                        const selectedPermission = this.scatterId.accounts.find(
+                            acc => acc.name === foundAuth.actor,
+                        )
+                        utils.info(
+                            `You selected the correct account, but a wrong permission (${
+                                selectedPermission.authority
+                            }). Click on "Show All" and select the ${utils.chalk.yellow(
+                                foundAuth.permission,
+                            )} permission.`,
+                        )
+                    }
                 }
 
                 try {

@@ -1,3 +1,4 @@
+const ScatterJS = require(`scatterjs-core`).default
 const eos = require(`../eos`)
 const utils = require(`../utils`)
 
@@ -6,7 +7,7 @@ const performTransaction = async ({sendTransaction, actions}) => {
         await sendTransaction(actions)
     } catch (error) {
         throw new Error(
-            `Error while sending transaction:\n  ${error.message}.\n  Payload: ${JSON.stringify(
+            `Error while sending transaction:\n  ${error.stack}.\n  Payload: ${JSON.stringify(
                 actions,
             )}`,
         )
@@ -53,7 +54,9 @@ const getSteps = ({env}) => {
                     await performTransaction({sendTransaction, actions})
                 } catch (error) {
                     throw new Error(
-                        `${error.message}\nNote: Updating permissions requires ${utils.chalk.yellow(
+                        `${
+                            error.message
+                        }\nNote: Updating permissions as a child of owner requires ${utils.chalk.yellow(
                             `owner`,
                         )} permissions. Make sure these are available for signatures.`,
                     )
@@ -112,6 +115,16 @@ const getSteps = ({env}) => {
         /* eslint-enable no-await-in-loop */
     }
 
+    const cleanup = async () => {
+        if (dfuseClient) {
+            dfuseClient.apiTokenManager.refreshScheduler.clearRefreshTimeout()
+        }
+        // when scatter is not initialized this throws
+        if (typeof ScatterJS.disconnect === `function`) {
+            // await ScatterJS.disconnect()
+        }
+    }
+
     return {
         fetchAccounts,
         fetchTokens,
@@ -122,6 +135,7 @@ const getSteps = ({env}) => {
         updateBandwidth,
         updateCode,
         updateTokens,
+        cleanup,
     }
 }
 
