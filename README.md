@@ -1,4 +1,4 @@
-> ⚠️ `eosiac` is currently under active development and not yet released. If you want to get involved, see the [Contributing guidelines](#contributing).
+> ⚠️ `eosiac` is currently under active development and a **beta** release. It is not yet recommended for production use. If you want to get involved, see the [Contributing guidelines](#contributing).
 
 # eosiac
 
@@ -6,6 +6,21 @@
 `eosiac` (**EOS** **I**nfrastructure-**a**s-**c**ode) is an [Infrastructure-as-code](https://en.wikipedia.org/wiki/Infrastructure_as_code) tool to manage EOS accounts for complex dapps.
 Dapps involve many accounts that require non-trivial setup (permissions, code, tokens, RAM, CPU, NET) often in multiple environments (mainnet, testnet, dev).
 `eosiac` automates the whole process by defining these environments in a **declarative way** through [**human-readable files**](#configuration-example) that are easy to understand even for non-developers.
+
+## Features
+
+* configured through simple-to-read configuration files
+* support for several environments
+* create accounts
+* create/update permissions including _keys_, _accounts_, and _weights_
+* stake CPU/NET
+* buy RAM
+* link permissions (only on EOS Mainnet, Jungle, and Kylin environmnets)
+* upload code / abi
+* distribute any token
+* sign with hard-coded private keys or [Scatter](https://get-scatter.com)
+* fully idempotent: only runs actions that are necessary to bring the environment to the specified setup - making it safe to script abortions, re-runs, running in CI
+* scaffold contract actions through the `create-actions` command
 
 ## Configuration Example
 
@@ -15,7 +30,7 @@ Configurations are stored in an `eosiac.yml` [YAML](https://learnxinyminutes.com
 ---
 dev:
   chain_id: cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f
-  node_endpoint: http://localhost:8888
+  node_endpoint: http://localhost:7777
   accounts_manager: eosio # account signing the new_account actions (needed when creating the accounts for the first time)
   funds_manager: eosio # account distributing tokens to accounts (liquid ones but also for staking)
   ram_manager: eosio # account buying RAM for accounts
@@ -26,43 +41,91 @@ dev:
         type: key
         private_keys:
           - 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-    dapptoken:
+    account123:
+      signature:
+        type: key
+        private_keys:
+          - 5JxfmGBJkKqHhcfmbGnwuhjrzxg3bd7D46hEpT8V634L2G7ptLr # active
+          - 5K5stUB6Do1XKvNCKv4Qh7JtPWzGd6sm12bBnRSD5gaA76a8TFE # owner, for _updateauth_
       auth:
         owner:
           permissions:
-            - EOS6z98haKv12d8vAJbDUkXmpK3PaKvf3Dv1NApo9MCxJ8oNWssDi
+            - EOS8ktnmUMpc5GLFwBa5bp3n2djwBUuV7BcZR3fS1dxQ7RFzQLf6v
         active:
           # parent: owner # implicit for active
           threshold: 2
           permissions:
-            - EOS5nYs7LDcFcVtFmnYrhYQv9Z8DPDd1r4MJ8na2MvcPPJkXwzM3x 2
+            - EOS7RTtzjKfoTBt4WR6ZMVgCfuM51fj4AbyzexhCqFWUk8BbK2EG7 2
             - dapptoken@eosio.code 1
             - wait@600 1
-      ram: 262144 # 256KB of RAM
-      # stake resources to self
-      cpu:
-        - delegate_to: dapptoken
-          amount: 10000 # 1 EOS
-      net:
-        - delegate_to: dapptoken
-          amount: 1e4 # 1 EOS
+        ops:
+          parent: owner
+          threshold: 1
+          permissions:
+            - EOS62mKPAN7T48aPdi8ZYRcPFWURgw9JMjz52yxijDAwRV8GwCzmY
       tokens:
         - account: eosio.token
-          amount: 1.0000 EOS # 1 EOS (unstaked)
-      code: contracts/dapptoken/dapptoken.wasm
-      abi: contracts/dapptoken/dapptoken.abi
+          amount: 1.0000 EOS
+      code: examples/contracts/hello/hello.wasm
+      abi: examples/contracts/hello/hello.abi
+
+kylin:
+  chain_id: 5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191
+  node_endpoint: https://api-kylin.eoslaomao.com
+  accounts_manager: eosiactester # account signing the new_account actions (needed when creating the accounts for the first time)
+  funds_manager: eosiactester # account distributing tokens to accounts (liquid ones but also for staking)
+  ram_manager: eosiactester # account buying RAM for accounts
+
+  accounts:
+    eosiactester:
+      signature:
+        type: scatter
+      cpu:
+        - delegate_to: eosiactester
+          amount: 100000
+        - delegate_to: eosiactestxx
+          amount: 100000
+      net:
+        - delegate_to: eosiactester
+          amount: 10000
+        - delegate_to: eosiactestxx
+          amount: 10000
+      auth:
+        owner:
+          permissions:
+            - EOS7dbJSQxad9BwYVBSugD4J9fBWEkZXYLuVjhQTPUTRqmmpQDzqq
+        active:
+          permissions:
+            - EOS7dbJSQxad9BwYVBSugD4J9fBWEkZXYLuVjhQTPUTRqmmpQDzqq
+
+    eosiactestxx:
+      signature:
+        type: scatter
+      auth:
+        owner:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+        active:
+          permissions:
+            - EOS7hf99wqEqmibs9VC5Tvmv94ym6JaRgbjGVLGFkffdZZYxLrweR
+        xtransfer:
+          parent: active
+          permissions:
+            - EOS6TJmDVcHe94P4i3rtRMRS8rveE4oG7Zqxz2s1zj9sL5ekvLtkH
+          links:
+            - eosio.token@transfer
+            - eosio.token@issue
+      ram: 100000
+      tokens:
+        - account: eosio.token
+          amount: 0.1337 EOS
+      code: examples/contracts/hello/hello.wasm
+      abi: examples/contracts/hello/hello.abi
 
 
 jungle:
   chain_id: e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473
   node_endpoint: https://jungle2.cryptolions.io:443
-  accounts_manager: someaccnt
-  funds_manager: someaccnt
-  ram_manager: someaccnt
-
-kylin:
-  chain_id: 5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191
-  node_endpoint: https://api-kylin.eoslaomao.com
   accounts_manager: someaccnt
   funds_manager: someaccnt
   ram_manager: someaccnt
@@ -94,6 +157,12 @@ Currently supported signature providers are:
 2. [Scatter](https://get-scatter.com)
 
 > The tool's execution is _idempotent_ - meaning if the blockchain is already in the desired state, it will do nothing.
+
+### Scaffolding actions
+
+```bash
+eosiac create-actions <environment> <account>
+```
 
 ## Contributing
 
