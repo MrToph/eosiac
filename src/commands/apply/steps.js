@@ -1,6 +1,6 @@
 const ScatterJS = require(`scatterjs-core`).default
-const eos = require(`../eos`)
-const utils = require(`../utils`)
+const eos = require(`../../eos`)
+const utils = require(`../../utils`)
 
 const performTransaction = async ({sendTransaction, actions}) => {
     try {

@@ -29,6 +29,30 @@ program
         utils.log(`  $ eosiac apply mainnet --config 'configs/eos_config.yml'`)
     })
 
+program
+    .command(`create-actions <env> <account>`)
+    .description(
+        `bootstraps javascript actions files for the contract specified in the config by account in env`,
+    )
+    .option(`-c, --config <path>`, `config file to use`)
+    .option(`-v, --verbose`, `verbose output log`)
+    .action(async (env, account, options) => {
+        try {
+            utils.setVerbose(options.verbose)
+            await commands.createActions(env, account, options)
+        } catch (error) {
+            utils.error(error.message)
+            process.exit(1)
+        }
+    })
+    .on(`--help`, () => {
+        utils.log(`The "abi" field must exist for the specified account in the environment.`)
+        utils.log(`Examples:`)
+        utils.log(``)
+        utils.log(`  $ eosiac create-actions dev cryptoshipxx`)
+        utils.log(`  $ eosiac create-actions dev cryptoshipxx --config 'configs/eos_config.yml'`)
+    })
+
 // show help on unknown commands
 program.on(`command:*`, () => {
     utils.log(program.help())

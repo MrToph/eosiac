@@ -2,7 +2,7 @@
     "name": "eosiac",
     "version": "1.0.0-beta.0",
     "description": "eosiac is an IaC-tool to manage EOS accounts for complex dapps",
-    "main": "src/cli.js",
+    "main": "src/index.js",
     "bin": {
         "eosiac": "./bin/index.js"
     },
@@ -25,11 +25,14 @@
         "@hapi/joi": "^15.0.0",
         "chalk": "^2.4.2",
         "commander": "^2.20.0",
+        "ejs": "^2.6.1",
         "eosjs": "^20.0.0",
+        "fs-extra": "^8.0.1",
         "install": "^0.12.2",
         "js-yaml": "^3.13.1",
         "lodash": "^4.17.11",
         "node-fetch": "^2.5.0",
+        "prettier": "^1.17.1",
         "scatterjs-core": "^2.7.18",
         "scatterjs-plugin-eosjs2": "^1.5.0"
     },

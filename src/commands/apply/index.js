@@ -1,7 +1,7 @@
 const chalk = require(`chalk`)
 const mapValues = require(`lodash/mapValues`)
-const utils = require(`../utils`)
-const Account = require(`../account`)
+const utils = require(`../../utils`)
+const Account = require(`../../account`)
 const steps = require(`./steps`)
 
 async function apply(envName, options) {
