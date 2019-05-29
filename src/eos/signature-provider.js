@@ -14,7 +14,7 @@ const utils = require(`../utils`)
 ScatterJS.plugins(new ScatterEOS())
 
 const getNetwork = ({env}) => {
-    const matches = /^(https?):\/\/(.*):?(\d*)\D*$/.exec(env.node_endpoint)
+    const matches = /^(https?):\/\/(.+):?(\d*)\D*$/.exec(env.node_endpoint)
     if (!matches) {
         throw new Error(
             `Could not parse EOS HTTP endpoint in env var node_endpoint: "${env.node_endpoint}"`,
@@ -22,13 +22,14 @@ const getNetwork = ({env}) => {
     }
 
     const [, httpProtocol, host, port] = matches
+    const realPort = port ? port : (httpProtocol === `https` ? 443 : 80)
 
     return {
         blockchain: `eos`,
         chainId: env.chain_id,
         protocol: httpProtocol,
         host,
-        port,
+        port: realPort,
     }
 }
 
@@ -85,7 +86,7 @@ class CombinedSignatureProvider {
     _getScatterConfiguredAccountNames() {
         const accounts = []
         Object.keys(this.env.accounts || {}).forEach(accountName => {
-            if (get(this.env, `accounts.${accountName}.signature.type`) === `scatter`) {
+            if (get(this.env, [`accounts`, accountName, `signature`, `type`]) === `scatter`) {
                 accounts.push(accountName)
             }
         })
@@ -95,7 +96,7 @@ class CombinedSignatureProvider {
 
     _getScatterConfiguredKeys() {
         const keys = this._getScatterConfiguredAccountNames().map(scatterAccountName => {
-            const auth = get(this.env, `accounts.${scatterAccountName}.auth`, [])
+            const auth = get(this.env, [`accounts`, scatterAccountName, `auth`], [])
 
             return Object.keys(auth).map(permName => get(auth, `${permName}.permissions`))
         })

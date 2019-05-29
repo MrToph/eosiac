@@ -41,7 +41,6 @@ const handler = {
     get(obj, prop) {
         const {stack} = new Error()
         if (prop === `localStorage` && stack.includes(`scatterjs-core`)) {
-            console.log(prop)
 
             return localStorage
         }
