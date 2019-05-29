@@ -1,3 +1,4 @@
+require(`./scatter-storage-provider`)
 const initSignatureProvider = require(`./signature-provider`)
 const initApi = require(`./api`)
 const initDfuse = require(`./dfuse`)

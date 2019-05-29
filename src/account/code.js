@@ -96,7 +96,14 @@ function getAbiAction({account, env}) {
 
     const contents = loadFileContents(account.abi)
 
-    const abi = JSON.parse(contents.toString(`utf8`))
+    let abi
+    try {
+        abi = JSON.parse(contents.toString(`utf8`))
+    } catch (error) {
+        throw new Error(
+            `Cannot parse contents of ABI file ${path.resolve(account.abi)}:\n\t${error.message}`,
+        )
+    }
     const serializedAbi = jsonToRawAbi(abi)
 
     const abiHash = createHash(serializedAbi)

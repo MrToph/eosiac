@@ -6,7 +6,7 @@ const prettier = require(`prettier`)
 
 const utils = require(`../../utils`)
 
-const actionsDir = `./actionsTEST`
+const actionsDir = `./actions`
 const prettierConfigPath = path.resolve(__dirname, `../../../.prettierrc.js`)
 
 const isNumberType = type => type.includes(`int`)

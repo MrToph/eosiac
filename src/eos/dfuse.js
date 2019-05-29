@@ -1,4 +1,4 @@
-const {createDfuseClient} = require(`@dfuse/client`)
+const {createDfuseClient, OnDiskApiTokenStore} = require(`@dfuse/client`)
 const fetch = require(`node-fetch`) // node only; not needed in browsers
 const utils = require(`../utils`) // node only; not needed in browsers
 
@@ -33,6 +33,7 @@ function initDfuse(env) {
                     webSocketFactory: async () => null,
                 },
             },
+            apiTokenStore: new OnDiskApiTokenStore(DFUSE_API_KEY),
         })
     } else {
         utils.silent(`dfuse not initialized for chainId ${env.chain_id}`)
