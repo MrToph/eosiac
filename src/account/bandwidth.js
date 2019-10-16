@@ -148,7 +148,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                 from: env.funds_manager,
                 to: from,
                 quantity: utils.formatAsset({amount: fundAmount, symbol: TOKEN_SYMBOL}),
-                memo: `Fund CPU/NET staking`,
+                memo: ``,
             },
         })
     }

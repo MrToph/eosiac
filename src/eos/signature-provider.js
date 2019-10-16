@@ -120,12 +120,13 @@ class CombinedSignatureProvider {
         const {requiredKeys, serializedTransaction} = signArgs
         const trx = tmpApi.deserializeTransaction(serializedTransaction)
         const currentKeys = await this.getAvailableKeys()
+        // TODO: currentKeys and requiredKeys are in different format. one in EOS_ other in PUB_
         const missingKeys = difference(requiredKeys, currentKeys)
+        // utils.debug(`Missing keys ${missingKeys.join(` `)}, current keys; ${currentKeys.join(` `)}`)
 
         let returnValue = {
             signatures: [],
         }
-
         if (missingKeys.length > 0) {
             const scatterConfiguredAccounts = this._getScatterConfiguredAccountNames()
             const trxAuths = flattenDeep(trx.actions.map(action => action.authorization))
@@ -197,9 +198,14 @@ class CombinedSignatureProvider {
                 signArgs.requiredKeys,
                 await this.keySignatureProvider.getAvailableKeys(),
             )
-            const keyReturnValue = await this.keySignatureProvider.sign(
-                Object.assign({}, signArgs, {requiredKeys: requiredKeysNoScatter}),
-            )
+            let keyReturnValue = {
+                signatures: []
+            }
+            if(requiredKeysNoScatter.length > 0) {
+                keyReturnValue = await this.keySignatureProvider.sign(
+                    Object.assign({}, signArgs, {requiredKeys: requiredKeysNoScatter}),
+                )
+            }
 
             returnValue = Object.assign(returnValue, keyReturnValue, {
                 signatures: returnValue.signatures.concat(keyReturnValue.signatures),
@@ -208,6 +214,9 @@ class CombinedSignatureProvider {
             // do nothing
         }
 
+        if(returnValue.signatures.length === 0) {
+            throw new Error(`No signatures could be determined with the current eosiac configuration.`)
+        }
         return returnValue
     }
 }

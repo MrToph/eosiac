@@ -22,7 +22,7 @@ const createTokenAction = ({from, to, deltaAmount, tokenContract, tokenSymbol}) 
             from: isRefund ? to : from,
             to: isRefund ? from : to,
             quantity: utils.formatAsset({amount: Math.abs(deltaAmount), symbol: tokenSymbol}),
-            memo: `Fund token`,
+            memo: `transfer`,
         },
     }
 }

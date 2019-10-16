@@ -33,6 +33,14 @@ const sendTransactionFactory = api => async args => {
         if (error instanceof RpcError) {
             const {name, what, details} = error.json.error
             message = details[0] ? details[0].message : `[${name}] ${what}`
+            const pendingConsoleDetail = details.find(d =>
+                d.message.includes(`pending console output:`),
+            )
+            if (pendingConsoleDetail) {
+                message += `\n${pendingConsoleDetail.message
+                    .replace(`pending console output:`, ``)
+                    .slice(0, 500)}`
+            }
         }
         utils.error(`Transaction Error: ${message}\n${JSON.stringify(args, null, 2)}`)
         throw error

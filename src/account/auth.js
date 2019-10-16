@@ -175,7 +175,6 @@ const getAuthActions = ({account, env}) => {
     }))
 
     const linkAuthActions = getLinkAuthActions({env, account})
-
     return updateAuthActions.concat(linkAuthActions)
 }
 
