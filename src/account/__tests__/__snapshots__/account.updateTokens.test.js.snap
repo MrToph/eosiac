@@ -12,7 +12,7 @@ Array [
     ],
     "data": Object {
       "from": "test",
-      "memo": "Fund token",
+      "memo": "transfer",
       "quantity": "100.0000 EOS",
       "to": "fundsmngr",
     },
@@ -33,7 +33,7 @@ Array [
     ],
     "data": Object {
       "from": "fundsmngr",
-      "memo": "Fund token",
+      "memo": "transfer",
       "quantity": "90.0000 EOS",
       "to": "test",
     },

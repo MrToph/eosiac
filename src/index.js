@@ -30,6 +30,7 @@ const sendTransactionFactory = api => async args => {
         }
     } catch (error) {
         let {message} = error
+
         if (error instanceof RpcError) {
             utils.log(JSON.stringify(error))
             const {name, what, details} = error.json.error
@@ -38,6 +39,7 @@ const sendTransactionFactory = api => async args => {
                     ? details.map(d => d.message.slice(0, 300)).join(`\n`)
                     : `[${name}] ${what}`
         }
+
         utils.error(`Transaction Error: ${message}\n${JSON.stringify(args, null, 2)}`)
         throw error
     }
