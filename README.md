@@ -19,6 +19,7 @@ Dapps involve many accounts that require non-trivial setup (permissions, code, t
 * upload code / abi
 * distribute any token
 * sign with hard-coded private keys or [Scatter](https://get-scatter.com)
+* use ONLY_BILL_FIRST_AUTHORIZER to pay for transactions (see cpu_payer object)
 * fully idempotent: only runs actions that are necessary to bring the environment to the specified setup - making it safe to script abortions, re-runs, running in CI
 * scaffold contract actions through the `create-actions` command
 
@@ -75,6 +76,13 @@ kylin:
   accounts_manager: eosiactester # account signing the new_account actions (needed when creating the accounts for the first time)
   funds_manager: eosiactester # account distributing tokens to accounts (liquid ones but also for staking)
   ram_manager: eosiactester # account buying RAM for accounts
+
+  # if you want to use the OBFA feature to pay for CPU/NET
+  cpu_payer:
+    account: cmichelkylin
+    permission: payforcpu
+    key: 5KMMoB5yStEbHsWNTaCie55rN2ZswnxqDiWuta2nG88AfEPo3X4
+    action: cmichelkylin@payforcpu # the noop action to insert as first action of the tx
 
   accounts:
     eosiactester:

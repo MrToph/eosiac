@@ -1,0 +1,21 @@
+{
+  "version": "eosio::abi/1.1",
+  "types": [],
+  "structs": [{
+      "name": "payforcpu",
+      "base": "",
+      "fields": []
+    }
+  ],
+  "actions": [{
+      "name": "payforcpu",
+      "type": "payforcpu",
+      "ricardian_contract": "This action does nothing."
+    }
+  ],
+  "tables": [],
+  "ricardian_clauses": [],
+  "error_messages": [],
+  "abi_extensions": [],
+  "variants": []
+}

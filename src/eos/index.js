@@ -13,6 +13,25 @@ function initEos(env) {
 
     const sendTransaction = async args => {
         const actions = Array.isArray(args) ? args : [args]
+        if (actions.length === 0) {
+            throw new Error(`Transaction does not contain any actions`)
+        }
+
+        const cpuPayer = env.cpu_payer
+        if (cpuPayer) {
+            const [noopAccount, noopAction] = cpuPayer.action.split(`@`)
+            actions.unshift({
+                account: noopAccount,
+                name: noopAction,
+                authorization: [
+                    {
+                        actor: cpuPayer.account,
+                        permission: cpuPayer.permission,
+                    },
+                ],
+                data: {},
+            })
+        }
 
         return api.transact(
             {

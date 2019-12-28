@@ -1,6 +1,7 @@
 const Joi = require(`@hapi/joi`)
 
 const nameSchema = Joi.string().regex(/^[a-z1-5.]{0,12}[a-j1-5]{0,1}$/)
+const privateKeySchema = Joi.string().regex(/^5/)
 
 const stakedResourceSchema = Joi.object({
     delegate_to: nameSchema.required(),
@@ -37,7 +38,7 @@ const accountSchema = Joi.object({
         type: Joi.string()
             .valid(`key`, `scatter`)
             .required(),
-        private_keys: Joi.array().items(Joi.string().regex(/^5/)),
+        private_keys: Joi.array().items(privateKeySchema),
     }),
     auth: Joi.object().pattern(/^/, authSchema),
     ram: Joi.number()
@@ -50,6 +51,15 @@ const accountSchema = Joi.object({
     abi: Joi.string(),
 })
 
+const obfaSchema = Joi.object({
+    account: nameSchema.required(),
+    permission: nameSchema.required(),
+    key: privateKeySchema.required(),
+    action: Joi.string()
+        .regex(/^[a-z1-5.]{0,12}[a-j1-5]{0,1}@[a-z1-5.]{0,12}[a-j1-5]{0,1}$/)
+        .required(),
+})
+
 const environmentSchema = Joi.object({
     chain_id: Joi.string()
         .regex(/^[0-9a-f]{64}$/)
@@ -60,6 +70,7 @@ const environmentSchema = Joi.object({
     accounts_manager: nameSchema.required(),
     funds_manager: nameSchema.required(),
     ram_manager: nameSchema.required(),
+    cpu_payer: obfaSchema,
     accounts: Joi.object().pattern(/^/, accountSchema),
 })
 

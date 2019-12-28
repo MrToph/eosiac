@@ -4,10 +4,10 @@ const {RpcError} = require(`eosjs`)
 const utils = require(`./utils`)
 const eos = require(`./eos`)
 
-const sendTransactionFactory = api => async args => {
+const extendSendTransaction = sendTransaction => async args => {
     try {
         const actions = Array.isArray(args) ? args : [args]
-        const transaction = await api.transact({actions}, {blocksBehind: 3, expireSeconds: 30})
+        const transaction = await sendTransaction(actions)
         const trxId = transaction.transaction_id
         for (const action of actions) {
             utils.silent(
@@ -45,6 +45,7 @@ const sendTransactionFactory = api => async args => {
     }
 }
 
+// used when requiring eosiac from javascript
 function main(envName, options = {}) {
     try {
         utils.setVerbose(options.verbose)
@@ -58,12 +59,12 @@ function main(envName, options = {}) {
 
         const env = config[envName]
 
-        const {api, dfuseClient} = eos.initEos(env)
+        const {api, dfuseClient, sendTransaction} = eos.initEos(env)
 
         return {
             api,
             dfuseClient,
-            sendTransaction: sendTransactionFactory(api),
+            sendTransaction: extendSendTransaction(sendTransaction),
             env,
         }
     } catch (error) {

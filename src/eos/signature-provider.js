@@ -51,6 +51,9 @@ class CombinedSignatureProvider {
                 }
             }
         })
+        if (env.cpu_payer) {
+            plainPrivateKeys.push(env.cpu_payer.key)
+        }
         this.keySignatureProvider = new JsSignatureProvider(plainPrivateKeys)
 
         const network = getNetwork({env})
@@ -206,7 +209,6 @@ class CombinedSignatureProvider {
                     Object.assign({}, signArgs, {requiredKeys: requiredKeysNoScatter}),
                 )
             }
-
             returnValue = Object.assign(returnValue, keyReturnValue, {
                 signatures: returnValue.signatures.concat(keyReturnValue.signatures),
             })
