@@ -44,8 +44,8 @@ class CombinedSignatureProvider {
 
         const plainPrivateKeys = []
         Object.keys(env.accounts || {}).forEach(accountName => {
-            if (get(env, `accounts.${accountName}.signature.type`) === `key`) {
-                const privateKeys = get(env, `accounts.${accountName}.signature.private_keys`)
+            if (get(env, [`accounts`, accountName, `signature`, `type`]) === `key`) {
+                const privateKeys = get(env, [`accounts`, accountName, `signature`, `private_keys`])
                 if (privateKeys) {
                     plainPrivateKeys.push(...privateKeys)
                 }

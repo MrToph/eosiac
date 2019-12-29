@@ -53,6 +53,42 @@ program
         utils.log(`  $ eosiac create-actions dev cryptoshipxx --config 'configs/eos_config.yml'`)
     })
 
+program
+    .command(`create-keys <regex>`)
+    .description(`creates vanity EOSIO public keys`)
+    .option(`-r, --regex <path>`, `regex to look for in an EOSIO public key`)
+    .action(async (regex, options) => {
+        try {
+            utils.setVerbose(options.verbose)
+            await commands.createKeys(regex, options)
+        } catch (error) {
+            utils.error(error.message)
+            process.exit(1)
+        }
+    })
+    .on(`--help`, () => {
+        utils.log(`Examples:`)
+        utils.log(``)
+        utils.log(`  $ eosiac create-keys /^EOS.{1}CPU/i`)
+    })
+
+program
+    .command(`key-to-public <privateKey>`)
+    .description(`shows the corresponding public key to a private key`)
+    .action(async privateKey => {
+        try {
+            await commands.keyToPublic(privateKey)
+        } catch (error) {
+            utils.error(error.message)
+            process.exit(1)
+        }
+    })
+    .on(`--help`, () => {
+        utils.log(`Examples:`)
+        utils.log(``)
+        utils.log(`  $ eosiac key-to-public 5JthD64TpfEV9925zSGtBCtHj67bMVXiFMhsXxZ2tKwFuTHs2VD`)
+    })
+
 // show help on unknown commands
 program.on(`command:*`, () => {
     utils.log(program.help())
