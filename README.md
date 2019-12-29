@@ -21,7 +21,11 @@ Dapps involve many accounts that require non-trivial setup (permissions, code, t
 * sign with hard-coded private keys or [Scatter](https://get-scatter.com)
 * use ONLY_BILL_FIRST_AUTHORIZER to pay for transactions (see cpu_payer object)
 * fully idempotent: only runs actions that are necessary to bring the environment to the specified setup - making it safe to script abortions, re-runs, running in CI
+
+Additional features:
 * scaffold contract actions through the `create-actions` command
+* create vanity EOS public keys (`eosiac create-keys --help`)
+* get public key for a private key (`eosiac key-to-public --help`)
 
 ## Configuration Example
 
