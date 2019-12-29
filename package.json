@@ -1,6 +1,6 @@
 {
     "name": "eosiac",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "eosiac is an IaC-tool to manage EOS accounts for complex dapps",
     "main": "src/index.js",
     "bin": {
