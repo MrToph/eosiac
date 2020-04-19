@@ -142,6 +142,13 @@ jungle:
   funds_manager: someaccnt
   ram_manager: someaccnt
 
+wax:
+  chain_id: 1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4
+  node_endpoint: https://chain.wax.io:443
+  accounts_manager: someaccnt
+  funds_manager: someaccnt
+  ram_manager: someaccnt
+
 mainnet:
   chain_id: aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906
   node_endpoint: https://public.eosinfra.io

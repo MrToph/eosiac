@@ -33,7 +33,15 @@ function initDfuse(env) {
                     webSocketFactory: async () => null,
                 },
             },
+            graphqlStreamClientOptions: {
+                socketOptions: {
+                    webSocketFactory: async () => null,
+                },
+            },
             apiTokenStore: new OnDiskApiTokenStore(DFUSE_API_KEY),
+            endpoints: {
+                authUrl: `null://`,
+            },
         })
     } else {
         utils.silent(`dfuse not initialized for chainId ${env.chain_id}`)

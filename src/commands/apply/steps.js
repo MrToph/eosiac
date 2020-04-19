@@ -117,7 +117,7 @@ const getSteps = ({env}) => {
 
     const cleanup = async () => {
         if (dfuseClient) {
-            dfuseClient.apiTokenManager.refreshScheduler.clearRefreshTimeout()
+            dfuseClient.release()
         }
         // when scatter is not initialized this throws
         if (typeof ScatterJS.disconnect === `function`) {

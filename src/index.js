@@ -32,15 +32,15 @@ const extendSendTransaction = sendTransaction => async args => {
         let {message} = error
 
         if (error instanceof RpcError) {
-            utils.log(JSON.stringify(error))
             const {name, what, details} = error.json.error
             message =
                 details.length > 0
                     ? details.map(d => d.message.slice(0, 300)).join(`\n`)
                     : `[${name}] ${what}`
+            utils.info(JSON.stringify(error))
         }
 
-        utils.error(`Transaction Error: ${message}\n${JSON.stringify(args, null, 2)}`)
+        utils.error(`Transaction Error23: ${message}\n${JSON.stringify(args, null, 2)}`)
         throw error
     }
 }
@@ -68,7 +68,7 @@ function main(envName, options = {}) {
             env,
         }
     } catch (error) {
-        utils.error(error.message)
+        utils.error(error.stack)
         throw error
     }
 }

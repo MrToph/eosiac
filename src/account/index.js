@@ -7,7 +7,7 @@ const getTokenActions = require(`./token`)
 const authHelpers = require(`./auth`)
 
 const isLocalBlockchain = ({env}) => {
-    const accountsManager = get(env, `accounts.${env.accounts_manager}`)
+    const accountsManager = get(env, [`accounts`, env.accounts_manager])
     if (!accountsManager) {
         throw new Error(
             `Accounts manager account "${env.accounts_manager}" not configured in accounts.`,
@@ -133,6 +133,8 @@ class Account {
 
     async fetchPermissionLinks({dfuseClient, delay = 0}) {
         if (!dfuseClient) {
+            this.currentState.linkedPermissions = new Error(`Dfuse not initialized`)
+
             return
         }
 
@@ -142,7 +144,8 @@ class Account {
             this.currentState.linkedPermissions = response.linked_permissions
             utils.silent(`Link Permissions for account "${this.name}" fetched.`)
         } catch (error) {
-            throw error
+            utils.error(`Error while fetching permission links: ${error.message}`)
+            this.currentState.linkedPermissions = error
         }
     }
 

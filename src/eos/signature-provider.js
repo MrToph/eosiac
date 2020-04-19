@@ -4,16 +4,16 @@ const flattenDeep = require(`lodash/flattenDeep`)
 const difference = require(`lodash/difference`)
 const intersection = require(`lodash/intersection`)
 const cloneDeep = require(`lodash/cloneDeep`)
-const {Api} = require(`eosjs`)
-const {JsSignatureProvider} = require(`eosjs/dist/eosjs-jssig`)
+const { Api } = require(`eosjs`)
+const { JsSignatureProvider } = require(`eosjs/dist/eosjs-jssig`)
 const ScatterJS = require(`scatterjs-core`).default
 const ScatterEOS = require(`scatterjs-plugin-eosjs2`).default
-const {TextEncoder, TextDecoder} = require(`util`) // node only; native TextEncoder/Decoder
+const { TextEncoder, TextDecoder } = require(`util`) // node only; native TextEncoder/Decoder
 const utils = require(`../utils`)
 
 ScatterJS.plugins(new ScatterEOS())
 
-const getNetwork = ({env}) => {
+const getNetwork = ({ env }) => {
     const matches = /^(https?):\/\/(.+):?(\d*)\D*$/.exec(env.node_endpoint)
     if (!matches) {
         throw new Error(
@@ -22,7 +22,7 @@ const getNetwork = ({env}) => {
     }
 
     const [, httpProtocol, host, port] = matches
-    const realPort = port ? port : (httpProtocol === `https` ? 443 : 80)
+    const realPort = port || (httpProtocol === `https` ? 443 : 80)
 
     return {
         blockchain: `eos`,
@@ -54,9 +54,9 @@ class CombinedSignatureProvider {
         if (env.cpu_payer) {
             plainPrivateKeys.push(env.cpu_payer.key)
         }
-        this.keySignatureProvider = new JsSignatureProvider(plainPrivateKeys)
+        this.keySignatureProvider = new JsSignatureProvider([...new Set(plainPrivateKeys)])
 
-        const network = getNetwork({env})
+        const network = getNetwork({ env })
         this.scatter = ScatterJS.scatter
         this.scatterSignatureProvider = this.scatter.eosHook(network, null, true)
         this.scatterConnected = false
@@ -67,17 +67,14 @@ class CombinedSignatureProvider {
             return
         }
 
-        const network = getNetwork({env: this.env})
-        this.scatterConnected = await this.scatter.connect(
-            `eosiac`,
-            {network, initTimeout: 5000},
-        )
+        const network = getNetwork({ env: this.env })
+        this.scatterConnected = await this.scatter.connect(`eosiac`, { network, initTimeout: 5000 })
     }
 
     async _loginScatter() {
         await this._connectScatter()
         if (this.scatterConnected) {
-            const network = getNetwork({env: this.env})
+            const network = getNetwork({ env: this.env })
             await this.scatter.forgetIdentity()
 
             this.scatterId = await this.scatter.getIdentity({
@@ -120,7 +117,7 @@ class CombinedSignatureProvider {
     }
 
     async sign(signArgs) {
-        const {requiredKeys, serializedTransaction} = signArgs
+        const { requiredKeys, serializedTransaction } = signArgs
         const trx = tmpApi.deserializeTransaction(serializedTransaction)
         const currentKeys = await this.getAvailableKeys()
         // TODO: currentKeys and requiredKeys are in different format. one in EOS_ other in PUB_
@@ -134,9 +131,9 @@ class CombinedSignatureProvider {
             const scatterConfiguredAccounts = this._getScatterConfiguredAccountNames()
             const trxAuths = flattenDeep(trx.actions.map(action => action.authorization))
 
-            const foundAuth = trxAuths.find(auth =>
-                scatterConfiguredAccounts.some(a => a === auth.actor),
-            )
+            const foundAuth = trxAuths
+                .reverse() // find from behind because of ONLY_BILL_FIRST_AUTHORIZER
+                .find(auth => scatterConfiguredAccounts.some(a => a === auth.actor))
 
             if (foundAuth) {
                 const hasSelectedCorrectly = () =>
@@ -202,11 +199,11 @@ class CombinedSignatureProvider {
                 await this.keySignatureProvider.getAvailableKeys(),
             )
             let keyReturnValue = {
-                signatures: []
+                signatures: [],
             }
-            if(requiredKeysNoScatter.length > 0) {
+            if (requiredKeysNoScatter.length > 0) {
                 keyReturnValue = await this.keySignatureProvider.sign(
-                    Object.assign({}, signArgs, {requiredKeys: requiredKeysNoScatter}),
+                    Object.assign({}, signArgs, { requiredKeys: requiredKeysNoScatter }),
                 )
             }
             returnValue = Object.assign(returnValue, keyReturnValue, {
@@ -216,9 +213,12 @@ class CombinedSignatureProvider {
             // do nothing
         }
 
-        if(returnValue.signatures.length === 0) {
-            throw new Error(`No signatures could be determined with the current eosiac configuration.`)
+        if (returnValue.signatures.length === 0) {
+            throw new Error(
+                `No signatures could be determined with the current eosiac configuration.`,
+            )
         }
+
         return returnValue
     }
 }

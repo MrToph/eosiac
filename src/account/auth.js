@@ -84,6 +84,11 @@ const createLinkActions = ({existingLinks, desiredLinks, account, permName}) => 
 }
 
 const getLinkAuthActions = ({account, env}) => {
+    // is set when dfuse was not initialized
+    if (account.currentState.linkedPermissions instanceof Error) {
+        return []
+    }
+
     // eslint-disable-next-line no-underscore-dangle
     const auth = account._getAuthFromConfig()
 
@@ -175,6 +180,7 @@ const getAuthActions = ({account, env}) => {
     }))
 
     const linkAuthActions = getLinkAuthActions({env, account})
+
     return updateAuthActions.concat(linkAuthActions)
 }
 
