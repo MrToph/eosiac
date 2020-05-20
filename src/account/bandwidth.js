@@ -13,12 +13,9 @@ const getDesiredDelegationsPerAccount = ({cpu = [], net = []}) => {
     return merged
 }
 
-const TOKEN_SYMBOL = {
-    symbol: `EOS`,
-    precision: 4,
-}
-
 const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
+    const systemToken = utils.getSystemToken(env)
+
     if (deltaNet === 0 && deltaCpu === 0) {
         return []
     }
@@ -42,11 +39,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                         receiver: to,
                         stake_net_quantity: utils.formatAsset({
                             amount: deltaNet,
-                            symbol: TOKEN_SYMBOL,
+                            symbol: systemToken.symbol,
                         }),
                         stake_cpu_quantity: utils.formatAsset({
                             amount: deltaCpu,
-                            symbol: TOKEN_SYMBOL,
+                            symbol: systemToken.symbol,
                         }),
                         transfer: false,
                     },
@@ -68,11 +65,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                         receiver: to,
                         unstake_net_quantity: utils.formatAsset({
                             amount: -deltaNet,
-                            symbol: TOKEN_SYMBOL,
+                            symbol: systemToken.symbol,
                         }),
                         unstake_cpu_quantity: utils.formatAsset({
                             amount: -deltaCpu,
-                            symbol: TOKEN_SYMBOL,
+                            symbol: systemToken.symbol,
                         }),
                     },
                 },
@@ -95,11 +92,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                     receiver: to,
                     unstake_net_quantity: utils.formatAsset({
                         amount: deltaNet < 0 ? -deltaNet : 0,
-                        symbol: TOKEN_SYMBOL,
+                        symbol: systemToken.symbol,
                     }),
                     unstake_cpu_quantity: utils.formatAsset({
                         amount: deltaCpu < 0 ? -deltaCpu : 0,
-                        symbol: TOKEN_SYMBOL,
+                        symbol: systemToken.symbol,
                     }),
                 },
             },
@@ -117,11 +114,11 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
                     receiver: to,
                     stake_net_quantity: utils.formatAsset({
                         amount: deltaNet > 0 ? deltaNet : 0,
-                        symbol: TOKEN_SYMBOL,
+                        symbol: systemToken.symbol,
                     }),
                     stake_cpu_quantity: utils.formatAsset({
                         amount: deltaCpu > 0 ? deltaCpu : 0,
-                        symbol: TOKEN_SYMBOL,
+                        symbol: systemToken.symbol,
                     }),
                     transfer: false,
                 },
@@ -147,7 +144,7 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
             data: {
                 from: env.funds_manager,
                 to: from,
-                quantity: utils.formatAsset({amount: fundAmount, symbol: TOKEN_SYMBOL}),
+                quantity: utils.formatAsset({amount: fundAmount, symbol: systemToken.symbol}),
                 memo: ``,
             },
         })
@@ -157,6 +154,8 @@ const createStakeActions = ({from, to, env, deltaCpu, deltaNet}) => {
 }
 
 const getBandwidthActions = ({account, env}) => {
+    const systemToken = utils.getSystemToken(env)
+
     const desiredDelegations = getDesiredDelegationsPerAccount({
         cpu: account.cpu,
         net: account.net,
@@ -167,14 +166,14 @@ const getBandwidthActions = ({account, env}) => {
         const currentNet = get(
             currentStake,
             `net_weight`,
-            utils.formatAsset({amount: 0, symbol: TOKEN_SYMBOL}),
+            utils.formatAsset({amount: 0, symbol: systemToken.symbol}),
         )
             .split(` `)[0]
             .replace(/\./, ``)
         const currentCpu = get(
             currentStake,
             `cpu_weight`,
-            utils.formatAsset({amount: 0, symbol: TOKEN_SYMBOL}),
+            utils.formatAsset({amount: 0, symbol: systemToken.symbol}),
         )
             .split(` `)[0]
             .replace(/\./, ``)

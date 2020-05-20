@@ -59,13 +59,13 @@ function initEos(env) {
             },
         )
 
-        const pushTransactionPayload = {
-            signatures: pushTransactionArgs.signatures,
-            compression: 0,
-            packed_context_free_data: ``,
-            packed_trx: utils.arrayToHex(pushTransactionArgs.serializedTransaction),
-        }
-        console.log(JSON.stringify(pushTransactionPayload))
+        // const pushTransactionPayload = {
+        //     signatures: pushTransactionArgs.signatures,
+        //     compression: 0,
+        //     packed_context_free_data: ``,
+        //     packed_trx: utils.arrayToHex(pushTransactionArgs.serializedTransaction),
+        // }
+        // console.log(JSON.stringify(pushTransactionPayload))
 
         return api.pushSignedTransaction(pushTransactionArgs)
     }

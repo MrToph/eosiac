@@ -67,6 +67,8 @@ const environmentSchema = Joi.object({
     node_endpoint: Joi.string()
         .uri()
         .required(),
+    system_contract: nameSchema,
+    system_symbol: Joi.string(),
     accounts_manager: nameSchema.required(),
     funds_manager: nameSchema.required(),
     ram_manager: nameSchema.required(),
