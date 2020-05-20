@@ -4,10 +4,9 @@ const initApi = require(`./api`)
 const initDfuse = require(`./dfuse`)
 const utils = require(`../utils`)
 
-let api = null
-let dfuseClient = null
-
-function initEos(env) {
+const initEos = env => {
+    let api = null
+    let dfuseClient = null
     const signatureProvider = initSignatureProvider(env)
     api = initApi(env, signatureProvider)
     try {

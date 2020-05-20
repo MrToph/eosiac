@@ -40,7 +40,7 @@ const extendSendTransaction = sendTransaction => async args => {
             utils.info(JSON.stringify(error))
         }
 
-        utils.error(`Transaction Error23: ${message}\n${JSON.stringify(args, null, 2)}`)
+        utils.error(`Transaction Error: ${message}\n${JSON.stringify(args, null, 2)}`)
         throw error
     }
 }
