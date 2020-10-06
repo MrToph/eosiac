@@ -144,7 +144,7 @@ class Account {
             this.currentState.linkedPermissions = response.linked_permissions
             utils.silent(`Link Permissions for account "${this.name}" fetched.`)
         } catch (error) {
-            utils.error(`Error while fetching permission links: ${error.message}`)
+            utils.error(`Error while fetching permission links: ${JSON.stringify(error)}`)
             this.currentState.linkedPermissions = error
         }
     }

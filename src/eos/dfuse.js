@@ -11,7 +11,9 @@ const getNetworkFromEnv = env => {
         case `5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191`:
             return `kylin`
         case `aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906`:
-            return `mainnet`
+            return `eos.dfuse.eosnation.io`
+        case `1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4`:
+            return `mainnet.wax.dfuse.io` // https://github.com/dfuse-io/client-js/issues/19
         default:
             return null
     }
@@ -39,9 +41,9 @@ function initDfuse(env) {
                 },
             },
             apiTokenStore: new OnDiskApiTokenStore(DFUSE_API_KEY),
-            endpoints: {
-                authUrl: `null://`,
-            },
+            // endpoints: {
+            //     authUrl: `null://`,
+            // },
         })
     } else {
         utils.silent(`dfuse not initialized for chainId ${env.chain_id}`)

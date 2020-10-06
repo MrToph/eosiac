@@ -37,15 +37,7 @@ const initEos = env => {
             })
         }
 
-        // const availableKeys = await api.signatureProvider.getAvailableKeys()
-        // console.log(`Available keys: `, availableKeys)
-        // console.log(actions[0].authorization)
-        // const requiredKeys = await api.authorityProvider.getRequiredKeys({
-        //     transaction: {actions},
-        //     availableKeys,
-        // })
-        // console.log(`Required keys: `, requiredKeys)
-
+        console.log(JSON.stringify(actions).slice(0, 500))
         const pushTransactionArgs = await api.transact(
             {
                 actions,
@@ -58,12 +50,12 @@ const initEos = env => {
             },
         )
 
-        // const pushTransactionPayload = {
-        //     signatures: pushTransactionArgs.signatures,
-        //     compression: 0,
-        //     packed_context_free_data: ``,
-        //     packed_trx: utils.arrayToHex(pushTransactionArgs.serializedTransaction),
-        // }
+        const pushTransactionPayload = {
+            signatures: pushTransactionArgs.signatures,
+            compression: 0,
+            packed_context_free_data: ``,
+            packed_trx: utils.arrayToHex(pushTransactionArgs.serializedTransaction),
+        }
         // console.log(JSON.stringify(pushTransactionPayload))
 
         return api.pushSignedTransaction(pushTransactionArgs)

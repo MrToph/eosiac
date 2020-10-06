@@ -9,7 +9,7 @@ const performTransaction = async ({sendTransaction, actions}) => {
         throw new Error(
             `Error while sending transaction:\n  ${error.stack}.\n  Payload: ${JSON.stringify(
                 actions,
-            )}`,
+            ).slice(0, 1024)}`,
         )
     }
 }

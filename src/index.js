@@ -21,16 +21,14 @@ const extendSendTransaction = sendTransaction => async args => {
                 transaction.processed.action_traces
                     .map(
                         trace =>
-                            `${trace.console}${trace.inline_traces
-                                .filter(Boolean)
-                                .map(t => `\t${t.console}\n`)}`,
+                            `${trace.console}${trace.inline_traces &&
+                                trace.inline_traces.filter(Boolean).map(t => `\t${t.console}\n`)}`,
                     )
                     .join(`\n`),
             )
         }
     } catch (error) {
         let {message} = error
-
         if (error instanceof RpcError) {
             const {name, what, details} = error.json.error
             message =
